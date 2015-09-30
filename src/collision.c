@@ -52,3 +52,13 @@ int Sphere_Cube_Overlap(Sphere a, Cube b)
 	return (cornerDistanceSQ <= (SQUARE(a.r)));
 }
 
+int Cube_Cube_Overlap(Cube a, Cube b)
+{
+	if (a.x > b.x + b.w || b.x > a.x + a.w ||
+		a.y > b.y + b.h || b.y > a.y + a.h ||
+		a.z > b.z + b.z || b.z > a.z + a.d)
+	{
+		return 0;
+	}
+	return 1;
+}
