@@ -1,9 +1,9 @@
 #include "physics.h"
-//#include <glib.h>
+#include "legion_lib.h"
 
 struct Space_T
 {
-	//GList *bodylist;
+	node *bodylist;
 	int steps;
 	int stepstaken;
 };
@@ -12,6 +12,7 @@ space* NewSpace()
 {
 	space *sp;
 	sp = (space*)calloc(1 , sizeof(struct Space_T));
+	sp->bodylist = malloc(sizeof(node));
 }
 
 void SpaceSetSteps(space* sp, int steps)
@@ -35,11 +36,16 @@ void SpaceAddBody(space* sp, Body* body)
 {
 	if (!sp) return;
 	if (!body) return;
-	//sp->bodylist = g_list_append(sp->bodylist, body);
+	legion_push_to_front(sp->bodylist->head, body);
 }
 void SpaceRemoveBody(space* sp, Body* body)
 {
 	if (!sp) return;
 	if (!body) return;
-	//sp->bodylist = g_list_remove(sp->bodylist, body);
+	legion_remove_by_value(sp->bodylist, body);
+}
+void Add_Gravity(entity e)
+{
+	e.velocity.z -= e.gravity + 15 * .01;
+	vec3d_add(e.position, e.position, e.velocity);
 }

@@ -82,6 +82,8 @@ typedef struct Entity_T
 	int facing; /* So the fighter knows which direction he is facing*/
 	long id;
 
+	float gravity;
+
 	Vec3D position;
 	Vec3D velocity;
 

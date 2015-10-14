@@ -43,6 +43,7 @@ void InitEntity(entity* e, long character)
 	e->x = 110;
 	e->y = 610;
 	e->t = clock();
+	e->gravity = 5;
 }
 /* Frees the memory that is held by the fighter */
 void FreeEntity(entity* e)
