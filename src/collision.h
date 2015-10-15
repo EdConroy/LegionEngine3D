@@ -9,5 +9,6 @@ int AABB(SDL_Rect attacker, SDL_Rect defender); /* Axis Aligned Bounding Box col
 int Rect3D_Overlap(Cube EntityA, Cube EntityB);
 int Sphere3D_Overlap(Sphere a, Sphere b);
 int Sphere_Cube_Overlap(Sphere a, Cube b);
+int Ray_Cube_Overlap(Vec3D point, Vec3D box, Vec3D size);
 
 #endif
