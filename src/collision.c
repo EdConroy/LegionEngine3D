@@ -62,3 +62,16 @@ int Cube_Cube_Overlap(Cube a, Cube b)
 	}
 	return 1;
 }
+int Ray_Cube_Overlap(Vec3D point, Vec3D box, Vec3D size)
+{
+	if ((point.x < box.x) ||
+		(point.y < box.y) ||
+		(point.z < box.z) ||
+		(point.x > box.x + size.x) ||
+		(point.y > box.y + size.y) ||
+		(point.z > box.z + size.z))
+	{
+		return 0;
+	}
+	return 1;
+}

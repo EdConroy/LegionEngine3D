@@ -48,8 +48,8 @@ void InitEntity(entity* e, long character)
 /* Frees the memory that is held by the fighter */
 void FreeEntity(entity* e)
 {
-	FreeSprite(e->sprite);
-	memset(e, 0, sizeof(entity));
+	free(e);
+	e = NULL;
 }
 
 void FreeEntityList()

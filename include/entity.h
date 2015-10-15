@@ -5,6 +5,7 @@
 #include "time.h"
 #include "sprite.h"
 #include "vector.h"
+#include "obj.h"
 
 #define IS_SET(a,b)				(a & b)
 #define SET_FLAG(a,b)			(a |= b)
@@ -59,8 +60,7 @@ typedef struct Sphere_T
 
 typedef struct Entity_T
 { 
-	Sprite* sprite;
-	SDL_Rect hitbox; 
+	Obj* obj; 
 	Cube hb;
 
 	float walk_speed;
@@ -70,7 +70,6 @@ typedef struct Entity_T
 	float fall_acc;
 	float jump_speed;
 	float jump_height;
-	float air_drift;
 	float current_speed;
 	float current_acc;
 
@@ -86,6 +85,7 @@ typedef struct Entity_T
 
 	Vec3D position;
 	Vec3D velocity;
+	Vec3D rotation;
 
 	clock_t t;
 }entity;
