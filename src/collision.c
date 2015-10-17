@@ -74,10 +74,8 @@ int Point_Cube_Overlap(Vec3D point, Vec3D box, Vec3D size)
 	}
 	return 1;
 }
-lbool ClipLine(int d, Vec3 planes, Vec3 v0, Vec3 v1, float f_low, float f_high)
+lbool ClipLine(int d, Vec3 planes, Vec3 v0, Vec3 v1)
 {
-
-
 	/* v0 is the start point of the ray while v1 is the end point*/
 	int temp;
 	float f_dim_low, f_dim_high;
@@ -90,7 +88,7 @@ lbool ClipLine(int d, Vec3 planes, Vec3 v0, Vec3 v1, float f_low, float f_high)
 		return true;
 	return false;
 }
-lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1, Vec3 intersect, float flFraction)
+lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1)
 {
 	/* v0 is the start point of the ray while v1 is the end point*/
 	float f_low = 0;
@@ -102,7 +100,7 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1, Vec3 intersect, float 
 
 	closest_dist = 10000000000000;
 
-	if (ClipLine(0, aabb.vmin, v0, v1, f_low, f_high)) 
+	if (ClipLine(0, aabb.vmin, v0, v1)) 
 	{
 		temp_dist = v1[0] - v0[0];
 		if (temp_dist == 0)
@@ -126,7 +124,7 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1, Vec3 intersect, float 
 			printf("%f,%f,%f,%f\n", closest_dist, closest[0], closest[1], closest[2]);
 		}
 	}
-	if (ClipLine(0, aabb.vmax, v0, v1, f_low, f_high))
+	if (ClipLine(0, aabb.vmax, v0, v1))
 	{
 		temp_dist = v1[0] - v0[0];
 		if (temp_dist == 0)
@@ -155,7 +153,7 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1, Vec3 intersect, float 
 			printf("%f,%f,%f,%f\n", closest_dist, closest[0], closest[1], closest[2]);
 		}
 	}
-	if (ClipLine(1, aabb.vmin, v0, v1, f_low, f_high))
+	if (ClipLine(1, aabb.vmin, v0, v1))
 	{
 		temp_dist = v1[1] - v0[1];
 		if (temp_dist == 0)
@@ -184,7 +182,7 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1, Vec3 intersect, float 
 			printf("%f,%f,%f,%f\n", closest_dist, closest[0], closest[1], closest[2]);
 		}
 	}
-	if (ClipLine(1, aabb.vmax, v0, v1, f_low, f_high))
+	if (ClipLine(1, aabb.vmax, v0, v1))
 	{
 		temp_dist = v1[1] - v0[1];
 		if (temp_dist == 0)
@@ -213,7 +211,7 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1, Vec3 intersect, float 
 			printf("%f,%f,%f,%f\n", closest_dist, closest[0], closest[1], closest[2]);
 		}
 	}
-	if (ClipLine(2, aabb.vmin, v0, v1, f_low, f_high))
+	if (ClipLine(2, aabb.vmin, v0, v1))
 	{
 		temp_dist = v1[2] - v0[2];
 		if (temp_dist == 0)
@@ -242,7 +240,7 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1, Vec3 intersect, float 
 			printf("%f,%f,%f,%f\n", closest_dist, closest[0], closest[1], closest[2]);
 		}
 	}
-	if (ClipLine(2, aabb.vmax, v0, v1, f_low, f_high))
+	if (ClipLine(2, aabb.vmax, v0, v1))
 	{
 		temp_dist = v1[2] - v0[2];
 		if (temp_dist == 0)
@@ -271,17 +269,13 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1, Vec3 intersect, float 
 			printf("%f,%f,%f,%f\n", closest_dist, closest[0], closest[1], closest[2]);
 		}
 	}
+	if (ClipLine(0, aabb.vmin, v0, v1) &&
+		ClipLine(0, aabb.vmax, v0, v1) &&
+		ClipLine(1, aabb.vmin, v0, v1) &&
+		ClipLine(1, aabb.vmax, v0, v1) &&
+		ClipLine(2, aabb.vmin, v0, v1) &&
+		ClipLine(2, aabb.vmax, v0, v1))
+		return true;
+
 	return false;
-		
-	/*
-	Vec3 b;
-	
-	Vec3d_sub(b, v1, v0);
-
-	Vec3d_scale(intersect, b, f_low);
-	Vec3d_add(intersect, intersect, v0);
-
-	flFraction = f_low;
-	*/
-	return true;
 }

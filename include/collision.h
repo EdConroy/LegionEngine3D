@@ -18,7 +18,7 @@ int Rect3D_Overlap(Cube EntityA, Cube EntityB);
 int Sphere3D_Overlap(Sphere a, Sphere b);
 int Sphere_Cube_Overlap(Sphere a, Cube b);
 int Ray_Cube_Overlap(Vec3D point, Vec3D box, Vec3D size);
-lbool ClipLine(int d, Vec3DCompare aabb, Vec3 v0, Vec3 v1, float f_low, float f_high);
-lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1, Vec3 intersect, float flFraction);
+lbool ClipLine(int d, Vec3DCompare aabb, Vec3 v0, Vec3 v1);
+lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1);
 
 #endif

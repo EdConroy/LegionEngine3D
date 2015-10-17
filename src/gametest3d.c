@@ -171,7 +171,7 @@ int main(int argc, char *argv[])
 					Vec3d_set(v0, 2, 0, 3);
 					Vec3d_set(v1, -2, 0, -3);
 					printf("Line Box pending \n");
-					LineBoxOverlap(sample.bounding, v0, v1, NULL, 0);
+					LineBoxOverlap(sample.bounding, v0, v1);
 					printf("Cool \n");
 				}
             }
