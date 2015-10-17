@@ -1,5 +1,6 @@
 #include "server.h"
 
+/*
 void message_ready(GObject* source_obj, GAsyncResult* res, gpointer userdata)
 {
 	GInputStream *istream = G_INPUT_STREAM(source_obj);
@@ -39,3 +40,4 @@ static lbool incoming_callback(GSocketService* service, GSocketConnection* conne
 		data);
 	return FALSE;
 }
+*/

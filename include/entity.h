@@ -60,8 +60,8 @@ typedef struct Sphere_T
 }Sphere;
 
 typedef struct Entity_T
-{ 
-	Obj* obj; 
+{
+	Obj* obj;
 	Cube hb;
 
 	int health;

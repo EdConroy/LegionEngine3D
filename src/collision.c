@@ -95,12 +95,12 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1)
 	float f_high = 1;
 
 	Vec3 closest, temp;
-	float closest_dist, temp_dist, 
+	float closest_dist, temp_dist,
 		slope, dist, height, width;
 
 	closest_dist = 10000000000000;
 
-	if (ClipLine(0, aabb.vmin, v0, v1)) 
+	if (ClipLine(0, aabb.vmin, v0, v1))
 	{
 		temp_dist = v1[0] - v0[0];
 		if (temp_dist == 0)
@@ -114,7 +114,7 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1)
 		width = dist * slope + v0[2];
 		printf("%f, %f\n", height, width);
 
-		if (height >= aabb.vmin[1] && height <= aabb.vmax[1] 
+		if (height >= aabb.vmin[1] && height <= aabb.vmax[1]
 			&& width >= aabb.vmin[2] && width <= aabb.vmax[2])
 		{
 			Vec3d_set(closest, aabb.vmin[0], height, width);

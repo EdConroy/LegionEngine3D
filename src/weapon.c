@@ -10,7 +10,7 @@ void fire_weapon(entity* self, entity* enemy, Vec3 start, Vec3 aim_dir, int dama
 	Vec3d_cpy(shot.dir, aim_dir);
 	shot.t = speed;
 
-	if(LineBoxOverlap(enemy->hb.bounding, start, aim_dir, NULL, 0))
+	if (LineBoxOverlap(enemy->hb.bounding, start, aim_dir, NULL, 0))
 	{
 		enemy->health -= damage;
 	}
@@ -60,7 +60,7 @@ void fire_rocket(entity* self, entity* enemy, Vec3D start, Vec3D aim_dir, int da
 void use_knife(entity* self, entity* enemy)
 {
 	Cube knife_box;
-	
+
 	knife_box.x = self->position.x + 2;
 	knife_box.y = self->position.y + 2;
 	knife_box.z = self->position.z + 2;

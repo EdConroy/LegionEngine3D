@@ -94,7 +94,7 @@ static void space_body_update(space *space, Body *body)
 		b.h = other->bounds.h;
 		b.d = other->bounds.d;
 		vec3d_add(b, b, other->bounds);
-		if (Rect3D_Overlap(a,b))
+		if (Rect3D_Overlap(a, b))
 		{
 			/*call touch functions*/
 			/*back the fuck off*/

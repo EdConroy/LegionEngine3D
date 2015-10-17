@@ -10,17 +10,17 @@
 
 typedef struct
 {
-    float x,y;
+	float x, y;
 }Vec2D;
 
 typedef struct
 {
-    float x,y,z;
+	float x, y, z;
 }Vec3D;
 
 typedef struct
 {
-    float x,y,z,w;
+	float x, y, z, w;
 }Vec4D;
 
 typedef float Vec;
@@ -34,9 +34,9 @@ typedef struct
 
 }Vec3DCompare;
 
-Vec2D vec2d(float x,float y);
-Vec3D vec3d(float x,float y, float z);
-Vec4D vec4d(float x,float y, float z, float w);
+Vec2D vec2d(float x, float y);
+Vec3D vec3d(float x, float y, float z);
+Vec4D vec4d(float x, float y, float z, float w);
 
 Vec2D vec2d(float x, float y);
 Vec3D vec3d(float x, float y, float z);
