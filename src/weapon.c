@@ -16,7 +16,7 @@ void fire_weapon(entity* self, entity* enemy, Vec3 start, Vec3 aim_dir, int dama
 	}
 }
 
-void rocket_update(entity* self, Vec3D start, Vec3D aim_dir)
+void rocket_fly(entity* self, Vec3D start, Vec3D aim_dir)
 {
 	float length;
 
@@ -50,7 +50,7 @@ void fire_rocket(entity* self, entity* enemy, Vec3D start, Vec3D aim_dir, int da
 	entity* rocket;
 	rocket = CreateEntity();
 
-	rocket_update(rocket, start, aim_dir);
+	rocket_fly(rocket, start, aim_dir);
 
 	if (Rect3D_Overlap(rocket->hb, enemy->hb))
 	{

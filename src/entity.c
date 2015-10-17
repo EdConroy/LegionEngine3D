@@ -16,20 +16,17 @@ void InitEntityList()
 
 entity* CreateEntity()
 {
-	entity* e;
 	int i;
 	for (i = 0; i < MAX_ENTITIES; ++i)
 	{
-		if (&Entities[i] == NULL)
+		if (getEntity(i))
 		{
-			e = malloc(&Entities[i], 0, sizeof(entity));
-			e->index = i;
-			break;
+			return getEntity(i);
 		}
 		else
 			printf("Cannot Create Entity, Max Entities Reached");
 	}
-	return e;
+	return NULL;
 }
 
 /* Gets the location of the fighter from the fighter list and returns the location */
@@ -39,7 +36,7 @@ entity * getEntity(int player)
 	return &Entities[player];
 }
 /* Sets the first player's data */
-void InitEntity(entity* e, long character)
+void InitEntity(entity* e, char* mod_file, char* spr_file, int spr_x, int spr_y)
 {
 	vec3d_set(e->position, 0, 0, 0);
 	vec3d_set(e->velocity, 0, 0, 0);
@@ -50,12 +47,16 @@ void InitEntity(entity* e, long character)
 	Vec3d_set(e->hb.bounding.vmax, 1, 1, 1);
 	Vec3d_set(e->hb.bounding.vmin, -1, -1, -1);
 	e->gravity = 5;
+	e->obj = obj_load(mod_file);
+	e->texture = LoadSprite(spr_file, spr_x, spr_y);
 }
 /* Frees the memory that is held by the fighter */
 void FreeEntity(entity* e)
 {
 	free(e);
-	e = NULL;
+	free(e->obj);
+	FreeSprite(e->texture);
+	memset(e,0,sizeof(entity));
 }
 
 void FreeEntityList()

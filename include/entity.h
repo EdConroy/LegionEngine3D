@@ -11,7 +11,7 @@
 #define SET_FLAG(a,b)			(a |= b)
 #define REMOVE_FLAG(a,b)		(a &= ~b)
 
-#define MAX_ENTITIES				255
+#define MAX_ENTITIES				1000000
 
 /* Indicates which fighter is currently being played by each player */
 #define FIGHT_STRIDER				0
@@ -61,6 +61,7 @@ typedef struct Sphere_T
 
 typedef struct Entity_T
 {
+	Sprite* texture;
 	Obj* obj;
 	Cube hb;
 
@@ -84,7 +85,7 @@ typedef struct Entity_T
 
 typedef enum { false, true } lbool;
 
-void InitEntity(entity* e, long character);
+void InitEntity(entity* e, char* mod_file, char* spr_file, int spr_x, int spr_y);
 void InitEntityList(); /* Initializes the fighter list and populates it */
 entity* CreateEntity();
 

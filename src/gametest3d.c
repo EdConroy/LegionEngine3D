@@ -49,6 +49,8 @@ int main(int argc, char *argv[])
 		0.0f, 1.0f, 0.0f, 1.0f,
 		0.0f, 0.0f, 1.0f, 1.0f
 	}; //we love you vertices!
+	entity* player;
+	entity* test;
 
 	init_logger("gametest3d.log");
 	if (graphics3d_init(1024, 768, 1, "gametest3d", 33) != 0)
@@ -73,7 +75,11 @@ int main(int argc, char *argv[])
 	bgtext = LoadSprite("models/mountain_text.png", 1024, 1024);
 
 	//    obj = obj_load("models/mountainvillage.obj");
+	player = CreateEntity();
+	test = CreateEntity();
 
+	InitEntity(player, "models/cube.obj", "models/cube_text.png", 1024, 1024);
+	InitEntity(test, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 
 	while (bGameLoopRunning)
 	{
@@ -143,19 +149,27 @@ int main(int argc, char *argv[])
 				}
 				else if (e.key.keysym.sym == SDLK_LEFT)
 				{
-					cameraRotation.z += 1;
+					//cameraRotation.z += 1;
+					player->position.x -= 1;
+					player->hb.x = player->position.z;
 				}
 				else if (e.key.keysym.sym == SDLK_RIGHT)
 				{
-					cameraRotation.z -= 1;
+					//cameraRotation.z -= 1;
+					player->position.x += 1;
+					player->hb.x = player->position.z;
 				}
 				else if (e.key.keysym.sym == SDLK_UP)
 				{
-					cameraRotation.x += 1;
+					//cameraRotation.x += 1;
+					player->position.y += 1;
+					player->hb.y = player->position.x;
 				}
 				else if (e.key.keysym.sym == SDLK_DOWN)
 				{
-					cameraRotation.x -= 1;
+					//cameraRotation.x -= 1;
+					player->position.y -= 1;
+					player->hb.y = player->position.x;
 				}
 				if (e.key.keysym.sym == SDLK_SPACE)
 				{
@@ -202,11 +216,28 @@ int main(int argc, char *argv[])
 			vec4d(1, 1, 1, 1),
 			texture
 			);
+		obj_draw(
+			player->obj,
+			player->position,
+			player->rotation,
+			vec3d(0.5, 0.5, 0.5),
+			vec4d(1, 1, 1, 1),
+			player->texture
+			);
+		obj_draw(
+			test->obj,
+			test->position,
+			test->rotation,
+			vec3d(0.5, 0.5, 0.5),
+			vec4d(1, 1, 1, 1),
+			test->texture
+			);
 		if (r > 360)r -= 360;
 		glPopMatrix();
 		/* drawing code above here! */
 		graphics3d_next_frame();
 	}
+	FreeEntityList();
 	return 0;
 }
 
