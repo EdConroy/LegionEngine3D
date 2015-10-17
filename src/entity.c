@@ -23,6 +23,7 @@ entity* CreateEntity()
 		if (&Entities[i] == NULL)
 		{
 			e = malloc(&Entities[i], 0, sizeof(entity));
+			e->index = i;
 			break;
 		}
 		else
@@ -40,9 +41,14 @@ entity * getEntity(int player)
 /* Sets the first player's data */
 void InitEntity(entity* e, long character)
 {
-	e->x = 110;
-	e->y = 610;
-	e->t = clock();
+	vec3d_set(e->position, 0, 0, 0);
+	vec3d_set(e->velocity, 0, 0, 0);
+	vec3d_set(e->rotation, 0, 0, 0);
+	e->hb.x = 0;
+	e->hb.y = 0;
+	e->hb.z = 0;
+	Vec3d_set(e->hb.bounding.vmax, 1, 1, 1);
+	Vec3d_set(e->hb.bounding.vmin, -1, -1, -1);
 	e->gravity = 5;
 }
 /* Frees the memory that is held by the fighter */
@@ -59,6 +65,12 @@ void FreeEntityList()
 	{
 		FreeEntity(&Entities[i]);
 	}
+}
+void FreeEntityFromList(entity* e)
+{
+	if (&Entities[e->index] == NULL)
+		printf("No such entity exists");
+	FreeEntity(&Entities[e->index]);
 }
 
 /* Loads the fighter from a text file into the game */
