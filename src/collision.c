@@ -74,7 +74,7 @@ int Point_Cube_Overlap(Vec3D point, Vec3D box, Vec3D size)
 	}
 	return 1;
 }
-lbool ClipLine(int d, Vec3 planes, Vec3 v0, Vec3 v1)
+int ClipLine(int d, Vec3 planes, Vec3 v0, Vec3 v1)
 {
 	/* v0 is the start point of the ray while v1 is the end point*/
 	int temp;
@@ -85,10 +85,10 @@ lbool ClipLine(int d, Vec3 planes, Vec3 v0, Vec3 v1)
 	f_dim_high = max(v0[d], v1[d]);
 
 	if (planes[d] >= f_dim_low && planes[d] <= f_dim_high)
-		return true;
-	return false;
+		return 1;
+	return 0;
 }
-lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1)
+int LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1)
 {
 	/* v0 is the start point of the ray while v1 is the end point*/
 	float f_low = 0;
@@ -275,7 +275,7 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1)
 		ClipLine(1, aabb.vmax, v0, v1) &&
 		ClipLine(2, aabb.vmin, v0, v1) &&
 		ClipLine(2, aabb.vmax, v0, v1))
-		return true;
+		return 1;
 
-	return false;
+	return 0;
 }
