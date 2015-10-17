@@ -55,5 +55,4 @@ void AngleVectors(Vec3D angles, Vec3D* forward, Vec3D* right, Vec3D* up)
 	}
 }
 
-
 /*eol@eof*/

@@ -45,6 +45,7 @@ typedef struct Cube_T
 	float w;
 	float h;
 	float d;
+	Vec3DCompare bounding;
 }Cube;
 
 typedef struct Sphere_T
@@ -86,9 +87,12 @@ typedef struct Entity_T
 	Vec3D position;
 	Vec3D velocity;
 	Vec3D rotation;
+	Vec3D move_dir;
 
 	clock_t t;
 }entity;
+
+typedef enum { false, true } lbool;
 
 void InitEntity(entity* e, long character);
 void InitEntityList(); /* Initializes the fighter list and populates it */

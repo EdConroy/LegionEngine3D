@@ -1,11 +1,32 @@
 #include "weapon.h"
 #include "collision.h"
 
-static void fire_weapon(entity* self, Vec3D start, Vec3D aim_dir, int damage, int kick, int hspread, int vspread, int mod)
+static void fire_weapon(entity* self, entity* enemy, Vec3 start, Vec3 aim_dir, int damage, int kick, int hspread, int vspread, int mod)
 {
-	Vec3D dir;
-	Vec3D forward, right, up;
-	Vec3D end;
+	Ray shot;
+	float speed;
 
-	VectorMA(start, 8192, forward, end);
+	Vec3d_cpy(shot.start, start);
+	Vec3d_cpy(shot.dir, aim_dir);
+	shot.t = speed;
+
+	if(LineBoxOverlap(enemy->hb.bounding, start, aim_dir, NULL, 0))
+	{
+		enemy->health -= damage;
+	}
+}
+
+static void fire_rocket(entity* self, entity* enemy, Vec3D start, Vec3D aim_dir, int damage, int sp_damage, int mod)
+{
+	entity* rocket;
+	float length;
+
+	vec3d_length(length, aim_dir);
+	vec3d_scale(rocket->velocity, aim_dir, 100 / length);
+	vectorMA(rocket->position, .01, rocket->velocity, rocket->position);
+
+	if (Rect3D_Overlap(rocket->hb, enemy->hb))
+	{
+		;
+	}
 }

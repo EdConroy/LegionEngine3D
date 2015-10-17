@@ -24,11 +24,13 @@
 #include "obj.h"
 #include "vector.h"
 #include "sprite.h"
+#include "collision.h"
 
 void set_camera(Vec3D position, Vec3D rotation);
 
 int main(int argc, char *argv[])
 {
+
     GLuint vao;
     float r = 0;
     GLuint triangleBufferObject;
@@ -155,6 +157,23 @@ int main(int argc, char *argv[])
                 {
                     cameraRotation.x -= 1;
                 }
+				if (e.key.keysym.sym == SDLK_SPACE)
+				{
+					printf("Start \n");
+					Cube sample;
+					Vec3d_set(sample.bounding.vmax, 1, 1, 1);
+					Vec3d_set(sample.bounding.vmin, -1, -1, -1);
+					sample.x = 0;
+					sample.y = 0;
+					sample.z = 0;
+					Vec3 v0;
+					Vec3 v1;
+					Vec3d_set(v0, 2, 0, 3);
+					Vec3d_set(v1, -2, 0, -3);
+					printf("Line Box pending \n");
+					LineBoxOverlap(sample.bounding, v0, v1, NULL, 0);
+					printf("Cool \n");
+				}
             }
         }
 

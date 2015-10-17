@@ -69,5 +69,5 @@ void LoadEntity(entity* e, long character)
 /* Allows the user to edit the data of any fighter */
 int EditEntity()
 {
-
+	return 0;
 }

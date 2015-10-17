@@ -1,7 +1,5 @@
 #include "entity.h"
 
-typedef enum {false,true} lbool;
-
 typedef struct Trace_T
 {
 	Cube a;
