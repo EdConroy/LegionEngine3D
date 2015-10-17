@@ -57,3 +57,16 @@ void fire_rocket(entity* self, entity* enemy, Vec3D start, Vec3D aim_dir, int da
 		rocket_touch(rocket, enemy);
 	}
 }
+void use_knife(entity* self, entity* enemy)
+{
+	Cube knife_box;
+	
+	knife_box.x = self->position.x + 2;
+	knife_box.y = self->position.y + 2;
+	knife_box.z = self->position.z + 2;
+
+	if (Rect3D_Overlap(knife_box, enemy->hb))
+	{
+		enemy->health = 0;
+	}
+}
