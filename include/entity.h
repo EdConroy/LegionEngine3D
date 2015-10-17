@@ -11,7 +11,7 @@
 #define SET_FLAG(a,b)			(a |= b)
 #define REMOVE_FLAG(a,b)		(a &= ~b)
 
-#define MAX_ENTITIES				2
+#define MAX_ENTITIES				255
 
 /* Indicates which fighter is currently being played by each player */
 #define FIGHT_STRIDER				0
@@ -64,22 +64,8 @@ typedef struct Entity_T
 	Obj* obj; 
 	Cube hb;
 
-	float walk_speed;
-	float walk_acc;
-	float run_speed;
-	float run_acc;
-	float fall_acc;
-	float jump_speed;
-	float jump_height;
-	float current_speed;
-	float current_acc;
-
-	int x; /* Goin' give it to ya */
-	int y;
-	int z;
 	int health;
-	int weight;
-	int facing; /* So the fighter knows which direction he is facing*/
+	int index;
 	long id;
 
 	float gravity;
@@ -90,6 +76,10 @@ typedef struct Entity_T
 	Vec3D move_dir;
 
 	clock_t t;
+
+	void(*think) (entity);
+	void(*touch) (entity, entity);
+	void(*update) (entity);
 }entity;
 
 typedef enum { false, true } lbool;
@@ -102,6 +92,7 @@ entity* getEntity(int player);
 
 void FreeEntity(entity* e);/* Frees all of the current memory held by the fighter and sets it to null*/
 void FreeEntityList();
+void FreeEntityFromList(entity* e);
 void CloseEntity();/* Frees all the fighters in the fighter list*/
 
 void LoadEntity(entity* e, long character); /* Loads Fighter data from a .txt file*/
