@@ -14,14 +14,29 @@ void fire_weapon(entity* self, entity* enemy, Vec3 start, Vec3 aim_dir, int dama
 		enemy->health -= damage;
 	}
 }
+entity* rocket_init(entity* player)
+{
+	entity* rocket;
 
+	rocket = CreateEntity();
+	InitEntity(rocket, "models/cube.obj", "models/cube_text.png", 1024, 1024);
+	vec3d_set(rocket->position, player->position.x, player->position.y + 1, player->position.z);
+	vec3d_set(rocket->acceleration, 0, 4, 0);
+
+	return rocket;
+}
 void rocket_fly(entity* self, Vec3D start, Vec3D aim_dir)
 {
+	self->hb.x = self->position.x;
+	self->hb.y = self->position.y;
+	self->hb.z = self->position.z;
+	/*
 	float length;
 
 	vec3d_length(length, aim_dir);
 	vec3d_scale(self->velocity, aim_dir, 100 / length);
 	vectorMA(self->position, .01, self->velocity, self->position);
+	*/
 }
 void rocket_touch(entity* self, entity* other)
 {
@@ -44,11 +59,8 @@ void rocket_touch(entity* self, entity* other)
 		return;
 	}
 }
-void fire_rocket(entity* self, entity* enemy, Vec3D start, Vec3D aim_dir, int damage, int sp_damage, int mod)
+void fire_rocket(entity* rocket, entity* enemy, Vec3D start, Vec3D aim_dir, int damage, int sp_damage, int mod)
 {
-	entity* rocket;
-	rocket = CreateEntity();
-
 	rocket_fly(rocket, start, aim_dir);
 
 	if (Rect3D_Overlap(rocket->hb, enemy->hb))

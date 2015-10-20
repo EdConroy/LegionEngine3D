@@ -60,6 +60,8 @@ int main(int argc, char *argv[])
 	entity* player;
 	entity* test;
 
+	lbool rocket_fired = false;
+
 	init_logger("gametest3d.log");
 	if (graphics3d_init(1024, 768, 1, "gametest3d", 33) != 0)
 	{
@@ -103,6 +105,7 @@ int main(int argc, char *argv[])
 
 	while (bGameLoopRunning)
 	{
+		static entity* rocket;
 		++num_frames;
 		Uint32 eMS = SDL_GetTicks() - start_time;
 		if (eMS)
@@ -131,24 +134,24 @@ int main(int argc, char *argv[])
 				{
 					case SDLK_w:
 					{
-						vec3d_set(player->acceleration, 0, 1, 0);
+						vec3d_set(player->acceleration, 0, 4, 0);
 						break;
 					}
 					case SDLK_s:
 					{
-						vec3d_set(player->acceleration, 0, -1, 0);
+						vec3d_set(player->acceleration, 0, -4, 0);
 						//vec3d_add(player->position, player->acceleration, player->position);
 						break;
 					}
 					case SDLK_a:
 					{
-						vec3d_set(player->acceleration, -1, 0, 0);
+						vec3d_set(player->acceleration, -4, 0, 0);
 						//vec3d_add(player->position, player->acceleration, player->position);
 						break;
 					}
 					case SDLK_d:
 					{
-						vec3d_set(player->acceleration, 1, 0, 0);
+						vec3d_set(player->acceleration, 4, 0, 0);
 						//vec3d_add(player->position, player->acceleration, player->position);
 						break;
 					}
@@ -158,7 +161,13 @@ int main(int argc, char *argv[])
 					}
 					case SDLK_SPACE:
 					{
-						use_knife(player, test);
+						if (!rocket_fired)
+						{
+							rocket = rocket_init(player);
+							vec3d_set(rocket->position, player->position.x, player->position.y + 1, player->position.z);
+						}
+						rocket_fired = true;
+						//use_knife(player, test);
 						printf("Enemy Health: %i\n", test->health);
 						/*
 						printf("Start \n");
@@ -248,6 +257,22 @@ int main(int argc, char *argv[])
 		player->hb.y = player->position.y;
 		player->hb.z = player->position.z;
 
+		if (rocket)
+		{
+			rocket_fly(rocket, player->position, test->position);
+
+			if (Rect3D_Overlap(rocket->hb, test->hb))
+			{
+				rocket_touch(rocket, test);
+				rocket_fired = false;
+			}
+			if ((int)eSecs % 30 == 0)
+			{
+				FreeEntityFromList(rocket);
+				rocket_fired = false;
+			}
+		}
+		
 		graphics3d_frame_begin();
 		game_update();
 
@@ -255,7 +280,17 @@ int main(int argc, char *argv[])
 		set_camera(
 			cameraPosition,
 			cameraRotation);
-
+		if (rocket)
+		{
+			obj_draw(
+				obj,
+				rocket->position,
+				rocket->rotation,
+				vec3d(1, 1, 1),
+				vec4d(1, 1, 1, 1),
+				texture
+				);
+		}
 		obj_draw(
 			bgobj,
 			vec3d(0, 0, 2),

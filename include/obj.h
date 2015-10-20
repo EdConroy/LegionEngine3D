@@ -75,6 +75,8 @@ Model *obj_load_model(char *filename);
 */
 Obj *obj_load(char *filename);
 
+void obj_free(Obj *obj);
+
 /**
 * @brief draw an object primitive
 * @param obj the obj to draw

@@ -62,13 +62,39 @@ void InitEntity(entity* e, char* mod_file, char* spr_file, int spr_x, int spr_y)
 	e->texture = LoadSprite(spr_file, spr_x, spr_y);
 	SpaceAddBody(game.space, &e->body);
 	e->body.owner = e;
+
+	e->index = entities_used - 1;
 }
 /* Frees the memory that is held by the fighter */
 void FreeEntity(entity* e)
 {
-	free(e->obj);
+	if (!e)
+	{
+		return;
+	}
+	obj_free(e->obj);
 	FreeSprite(e->texture);
-	memset(e,0,sizeof(entity));
+	e->health = 0;
+
+	vec3d_set(e->position, 0, 0, 0);
+	vec3d_set(e->velocity, 0, 0, 0);
+	vec3d_set(e->rotation, 0, 0, 0);
+
+	e->hb.x = 0;
+	e->hb.y = 0;
+	e->hb.z = 0;
+	e->hb.d = 0;
+	e->hb.w = 0;
+	e->hb.h = 0;
+
+	Vec3d_set(e->hb.bounding.vmax, 0, 0, 0);
+	Vec3d_set(e->hb.bounding.vmin, 0, 0, 0);
+	e->gravity = 0;
+
+	SpaceRemoveBody(game.space, &e->body);
+	e->body.owner = NULL;
+
+	e = NULL;
 	free(e);
 }
 
@@ -79,12 +105,14 @@ void FreeEntityList()
 	{
 		FreeEntity(&Entities[i]);
 	}
+	entities_used = 0;
 }
 void FreeEntityFromList(entity* e)
 {
 	if (&Entities[e->index] == NULL)
 		printf("No such entity exists");
 	FreeEntity(&Entities[e->index]);
+	--entities_used;
 }
 
 /* Loads the fighter from a text file into the game */

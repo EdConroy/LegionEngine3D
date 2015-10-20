@@ -1,6 +1,6 @@
 #include <glib.h>
 #include <gio\gio.h>
-#include "entity.h"
+#include "lbool.h"
 
 #define BLOCK_SIZE 1024
 #define PORT 2345
