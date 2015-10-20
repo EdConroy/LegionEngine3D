@@ -1,7 +1,7 @@
 #ifndef __VECTOR_H__
 #define __VECTOR_H__
 
-#include "math.h"
+#include <math.h>
 
 #define swap(c, a, b) (c = b, a = b, b = c)
 #define max(a,b) ((a < b)? b : a)
@@ -73,6 +73,10 @@ void AngleVectors(Vec3D angles, Vec3D* forward, Vec3D* right, Vec3D* up);
 #define Vec2d_add(dst,a,b)   (dst[0] = a[0] + b[0], dst[1] = a[1] + b[1])
 #define Vec3d_add(dst,a,b)   (dst[0] = a[0] + b[0], dst[1] = a[1] + b[1], dst[2] = a[2] + b[2])
 #define Vec4d_add(dst,a,b)   (dst[0] = a[0] + b[0], dst[1] = a[1] + b[1], dst[2] = a[2] + b[2], dst[3] = a[3] + b[3])
+
+#define vec2d_sub(dst,a,b)   (dst.x = a.x - b.x, dst.y = a.y - b.y)
+#define vec3d_sub(dst,a,b)   (dst.x = a.x - b.x, dst.y = a.y - b.y, dst.z = a.z - b.z)
+#define vec4d_sub(dst,a,b)   (dst.x = a.x - b.x, dst.y = a.y - b.y, dst.z = a.z - b.z, dst.w = a.w - b.w)
 
 #define Vec2d_sub(dst,a,b)   (dst[0] = a[0] - b[0], dst[1] = a[1] - b[1])
 #define Vec3d_sub(dst,a,b)   (dst[0] = a[0] - b[0], dst[1] = a[1] - b[1], dst[2] = a[2] - b[2])

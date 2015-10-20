@@ -1,7 +1,6 @@
 #include "physics.h"
+#include "entity.h"
 #include <glib.h>
-#include "collision.h"
-#include "mgl_callback.h"
 
 struct Space_T
 {
@@ -9,6 +8,7 @@ struct Space_T
 	int steps;
 	int stepstaken;
 	float stepFactor;
+	Vec3D stepVector;
 };
 
 space* NewSpace()
@@ -19,12 +19,6 @@ space* NewSpace()
 }
 
 void SpaceSetSteps(space* sp, int steps)
-{
-	if (!sp) return;
-	sp->steps = steps;
-}
-
-void SpaceDoStep(space* sp, int steps)
 {
 	if (!sp) return;
 	if (!steps)
@@ -39,7 +33,7 @@ void SpaceDoStep(space* sp, int steps)
 void space_free(space* sp)
 {
 	if (!sp) return;
-	memset(sp, 0, sizeof(space));
+	free(sp);
 }
 
 void SpaceAddBody(space* sp, Body* body)
@@ -55,12 +49,18 @@ void SpaceRemoveBody(space* sp, Body* body)
 	if (!body) return;
 	sp->bodylist = g_list_remove(sp->bodylist, body);
 }
-void Add_Gravity(entity e)
+static void space_add_gravity(Body* body)
 {
-	e.velocity.z -= e.gravity + 15 * .01;
-	vec3d_add(e.position, e.position, e.velocity);
+	body->owner->velocity.z -= body->owner->gravity + 15 * .01;
+	vec3d_add(body->owner->position, body->owner->position, body->owner->velocity);
 }
+static void space_accelerate(Body* body)
+{
+	if (!body) return;
 
+	body->velocity.x = body->owner->acceleration.x * 2;
+	body->velocity.y = body->owner->acceleration.y * 2;
+}
 static void space_body_update(space *space, Body *body)
 {
 	GList *it;
@@ -112,15 +112,20 @@ static void space_body_update(space *space, Body *body)
 static void space_update(space *space)
 {
 	GList *it;
+	Body* body;
+
 	for (it = space->bodylist; it != NULL; it = g_list_next(it))
 	{
 		if (!it->data)continue;
+		
+		body = (Body*) it->data;
+
 		space_body_update(space, (Body*)it->data);
-	}
-	for (it = space->bodylist; it != NULL; it = g_list_next(it))
-	{
-		if (!it->data)continue;
-		body_process((Body *)it->data);
+		//space_add_gravity(body);
+		space_accelerate(body);
+
+		vec3d_scale(space->stepVector, body->velocity, space->stepFactor);
+		vec3d_add(body->owner->position, body->owner->position, space->stepVector);
 	}
 }
 

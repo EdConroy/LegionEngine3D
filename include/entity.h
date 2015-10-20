@@ -1,11 +1,11 @@
 #ifndef _FIGHTER_
 #define _FIGHTER_
 
-#include "graphics3d.h"
-#include "time.h"
+#include <time.h>
 #include "sprite.h"
 #include "vector.h"
 #include "obj.h"
+#include "physics.h"
 
 #define IS_SET(a,b)				(a & b)
 #define SET_FLAG(a,b)			(a |= b)
@@ -37,33 +37,12 @@ States used for drawing the player character
 #define ANIMFLAG_CROUCH				4
 #define ANIMFLAG_HITSTUN			5
 
-typedef struct Cube_T
-{
-	float x;
-	float y;
-	float z;
-	float w;
-	float h;
-	float d;
-	Vec3DCompare bounding;
-}Cube;
-
-typedef struct Sphere_T
-{
-	float x;
-	float y;
-	float z;
-	float w;
-	float h;
-	float d;
-	float r;
-}Sphere;
-
 typedef struct Entity_T
 {
 	Sprite* texture;
 	Obj* obj;
 	Cube hb;
+	Body body;
 
 	int health;
 	int index;
@@ -73,17 +52,18 @@ typedef struct Entity_T
 
 	Vec3D position;
 	Vec3D velocity;
+	Vec3D acceleration;
 	Vec3D rotation;
 	Vec3D move_dir;
 
 	clock_t t;
 
-	void(*think) (entity);
-	void(*touch) (entity, entity);
-	void(*update) (entity);
+	void(*think) (struct Entity_T);
+	void(*touch) (struct Entity_T, struct Entity_T);
+	void(*update) (struct Entity_T);
 }entity;
 
-typedef enum { false, true } lbool;
+
 
 void InitEntity(entity* e, char* mod_file, char* spr_file, int spr_x, int spr_y);
 void InitEntityList(); /* Initializes the fighter list and populates it */

@@ -1,5 +1,4 @@
 #include "weapon.h"
-#include "collision.h"
 
 void fire_weapon(entity* self, entity* enemy, Vec3 start, Vec3 aim_dir, int damage, int mod)
 {
@@ -10,7 +9,7 @@ void fire_weapon(entity* self, entity* enemy, Vec3 start, Vec3 aim_dir, int dama
 	Vec3d_cpy(shot.dir, aim_dir);
 	shot.t = speed;
 
-	if (LineBoxOverlap(enemy->hb.bounding, start, aim_dir, NULL, 0))
+	if (LineBoxOverlap(enemy->hb.bounding, start, aim_dir))
 	{
 		enemy->health -= damage;
 	}
@@ -61,12 +60,17 @@ void use_knife(entity* self, entity* enemy)
 {
 	Cube knife_box;
 
-	knife_box.x = self->position.x + 2;
-	knife_box.y = self->position.y + 2;
-	knife_box.z = self->position.z + 2;
+	knife_box.x = self->position.x;
+	knife_box.y = self->position.y;
+	knife_box.z = self->position.z;
+	
+	knife_box.w = self->hb.w + 2;
+	knife_box.h = self->hb.h + 2;
+	knife_box.d = self->hb.d + 2;
 
 	if (Rect3D_Overlap(knife_box, enemy->hb))
 	{
 		enemy->health = 0;
+		printf("Enemy Health: %i\n", enemy->health);
 	}
 }

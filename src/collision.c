@@ -1,6 +1,4 @@
 #include "collision.h"
-#include "vector.h"
-#include "math.h"
 
 int AABB(SDL_Rect attacker, SDL_Rect defender)
 {
@@ -17,9 +15,9 @@ int AABB(SDL_Rect attacker, SDL_Rect defender)
 }
 int Rect3D_Overlap(Cube EntityA, Cube EntityB)
 {
-	if (EntityA.x > (EntityB.x + EntityB.w) && EntityA.y > (EntityB.y + EntityB.h) &&
-		EntityB.x > (EntityA.x + EntityA.w) && EntityB.y > (EntityA.y + EntityB.h) &&
-		EntityB.z > (EntityA.z + EntityA.d) && EntityA.z > (EntityB.z + EntityB.d))
+	if (EntityA.x < (EntityB.x + EntityB.w) && EntityA.y < (EntityB.y + EntityB.h) &&
+		EntityB.x < (EntityA.x + EntityA.w) && EntityB.y < (EntityA.y + EntityB.h) &&
+		EntityB.z < (EntityA.z + EntityA.d) && EntityA.z < (EntityB.z + EntityB.d))
 	{
 		return 1;
 	}
@@ -269,11 +267,11 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1)
 			printf("%f,%f,%f,%f\n", closest_dist, closest[0], closest[1], closest[2]);
 		}
 	}
-	if (ClipLine(0, aabb.vmin, v0, v1) &&
-		ClipLine(0, aabb.vmax, v0, v1) &&
-		ClipLine(1, aabb.vmin, v0, v1) &&
-		ClipLine(1, aabb.vmax, v0, v1) &&
-		ClipLine(2, aabb.vmin, v0, v1) &&
+	if (ClipLine(0, aabb.vmin, v0, v1) ||
+		ClipLine(0, aabb.vmax, v0, v1) ||
+		ClipLine(1, aabb.vmin, v0, v1) ||
+		ClipLine(1, aabb.vmax, v0, v1) ||
+		ClipLine(2, aabb.vmin, v0, v1) ||
 		ClipLine(2, aabb.vmax, v0, v1))
 		return true;
 

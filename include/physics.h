@@ -2,7 +2,6 @@
 #define _PHYSICS_
 
 #include "collision.h"
-#include "vector.h"
 #include "mgl_callback.h"
 
 typedef struct Body_T
@@ -14,6 +13,7 @@ typedef struct Body_T
 	int  _needsBackoff;
 	int  _done;
 	Vec3D _stepOffVector;
+	struct Entity_T* owner;
 }Body;
 
 
@@ -32,5 +32,5 @@ void space_do_step(space *space);
 void body_reset(Body *body);
 void body_process(Body *body);
 
-void Add_Gravity(entity e);
+void Add_Gravity(Body* body);
 #endif
