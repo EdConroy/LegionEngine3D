@@ -3,12 +3,13 @@
 void fire_weapon(entity* self, entity* enemy, Vec3 start, Vec3 aim_dir, int damage, int mod)
 {
 	Ray shot;
-	float speed;
+	float speed = 0;
 
 	Vec3d_cpy(shot.start, start);
 	Vec3d_cpy(shot.dir, aim_dir);
 	shot.t = speed;
-
+	if (self->position.x > enemy->hb.x + 1 || self->position.x < enemy->hb.x - 1)
+		return;
 	if (LineBoxOverlap(enemy->hb.bounding, start, aim_dir))
 	{
 		enemy->health -= damage;

@@ -1,15 +1,20 @@
-#include <glib.h>
-#include <gio\gio.h>
-#include "lbool.h"
+#include "SDL_net.h"
 
 #define BLOCK_SIZE 1024
 #define PORT 2345
 
-struct ConnData
+typedef struct ServerData
 {
-	GSocketConnection* connection;
-	char message[BLOCK_SIZE];
-};
+	TCPsocket sd, csd;
+	IPaddress ip, *remoteIP;
+	int quit, quit2;
+	char buffer[512];
+	char* hostname;
+}Server;
 
-void message_ready(GObject* source_obj, GAsyncResult* res, gpointer userdata);
-static lbool incoming_callback(GSocketService* service, GSocketConnection* connection, GObject* source_object, gpointer user_data);
+void server_setup();
+void server_setup();
+void server_connect();
+void server_update();
+void server_close_client();
+void server_close();

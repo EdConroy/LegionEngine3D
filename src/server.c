@@ -1,41 +1,57 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "server.h"
 
-void message_ready(GObject* source_obj, GAsyncResult* res, gpointer userdata)
+Server data;
+
+void server_setup()
 {
-	GInputStream *istream = G_INPUT_STREAM(source_obj);
-	GError *error = NULL;
-	struct ConnData *data = userdata;
-	int count;
-
-	count = g_input_stream_read_finish(istream,
-		res,
-		&error);
-
-	if (count == -1) {
-		g_error("Error when receiving message");
-		if (error != NULL) {
-			g_error("%s", error->message);
-			g_clear_error(&error);
+	if (SDLNet_Init() < 0)
+	{
+		printf("SDL Init: %s\n", SDLNet_GetError());
+		exit(EXIT_FAILURE);
+	}
+	if (SDLNet_ResolveHost(&data.ip, NULL, 2000) < 0)
+	{
+		printf("SDL Resolve Host: %s\n", SDLNet_GetError());
+		exit(EXIT_FAILURE);
+	}
+	if (!(data.sd = SDLNet_TCP_Open(&data.ip)))
+	{
+		printf("SDL TCP Open: %s\n", SDLNet_GetError());
+		exit(EXIT_FAILURE);
+	}
+}
+void server_connect()
+{
+	if (data.csd = SDL_TCP_Accept(data.sd))
+	{
+		if (data.remoteIP = SDLNet_TCP_GetPeerAddress(data.csd))
+		{
+			printf("Host connected: %x, %d\n", SDLNet_Read32(&data.remoteIP->host), SDLNet_Read16(&data.remoteIP->port));
+		}
+		else
+			printf("SDL TCP Get Peer Address: %s\n", SDLNet_GetError());
+	}
+}
+void server_update()
+{
+	while (1)
+	{
+		if (SDLNet_TCP_Recv(data.csd, data.buffer, 512) > 0)
+		{
+			printf("Client Data: %s\n", data.buffer);
 		}
 	}
-	g_message("Message was: \"%s\"\n", data->message);
-	g_object_unref(G_SOCKET_CONNECTION(data->connection));
-	g_free(data);
+	server_close_client();
 }
-static lbool incoming_callback(GSocketService* service, GSocketConnection* connection, GObject* source_object, gpointer user_data)
+void server_close_client()
 {
-	g_message("Received Connection from client!\n");
-	GInputStream *istream = g_io_stream_get_input_stream(G_IO_STREAM(connection));
-	struct ConnData *data = g_new(struct ConnData, 1);
-
-	data->connection = g_object_ref(connection);
-
-	g_input_stream_read_async(istream,
-		data->message,
-		sizeof(data->message),
-		G_PRIORITY_DEFAULT,
-		NULL,
-		message_ready,
-		data);
-	return FALSE;
+	SDLNet_TCP_Close(data.csd);
+}
+void server_close()
+{
+	SDLNet_TCP_Close(data.sd);
+	SDLNet_Quit();
+	exit(EXIT_SUCCESS);
 }

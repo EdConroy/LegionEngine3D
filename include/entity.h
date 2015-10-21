@@ -37,6 +37,10 @@ States used for drawing the player character
 #define ANIMFLAG_CROUCH				4
 #define ANIMFLAG_HITSTUN			5
 
+#define WFLAG_RIFLE					0
+#define WFLAG_KNIFE					1
+#define WFLAG_ROCKET				2
+
 typedef struct Entity_T
 {
 	Sprite* texture;
@@ -47,6 +51,7 @@ typedef struct Entity_T
 	int health;
 	int index;
 	long id;
+	long weapon_flag;
 
 	float gravity;
 

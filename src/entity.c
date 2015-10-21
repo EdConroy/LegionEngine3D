@@ -54,6 +54,7 @@ void InitEntity(entity* e, char* mod_file, char* spr_file, int spr_x, int spr_y)
 	e->hb.d = 1;
 	e->hb.w = 1;
 	e->hb.h = 1;
+	e->weapon_flag = WFLAG_RIFLE;
 
 	Vec3d_set(e->hb.bounding.vmax, 1, 1, 1);
 	Vec3d_set(e->hb.bounding.vmin, -1, -1, -1);
@@ -86,6 +87,7 @@ void FreeEntity(entity* e)
 	e->hb.d = 0;
 	e->hb.w = 0;
 	e->hb.h = 0;
+	e->weapon_flag = NULL;
 
 	Vec3d_set(e->hb.bounding.vmax, 0, 0, 0);
 	Vec3d_set(e->hb.bounding.vmin, 0, 0, 0);

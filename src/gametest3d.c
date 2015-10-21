@@ -26,6 +26,7 @@
 #include "collision.h"
 #include "game.h"
 #include "weapon.h"
+//#include "server.h"
 
 void set_camera(Vec3D position, Vec3D rotation);
 
@@ -102,9 +103,36 @@ int main(int argc, char *argv[])
 
 	vec3d_set(player->position, 0, 0, 0);
 	vec3d_set(test->position, 0, 0, 0);
+	
+	/*
+	GSocketService *service;
+	GError *error = NULL;
+	gboolean ret;
 
+	service = g_socket_service_new();
+	ret = g_socket_listener_add_inet_port(G_SOCKET_LISTENER(service),
+		PORT, NULL, &error);
+
+	*/
 	while (bGameLoopRunning)
 	{
+		/*
+		if (ret && error != NULL)
+		{
+			g_error("%s", error->message);
+			g_clear_error(&error);
+			return 1;
+		}
+
+		g_signal_connect(service,
+			"incoming",
+			G_CALLBACK(incoming_callback),
+			NULL);
+
+		g_socket_service_start(service);
+		GMainLoop *loop = g_main_loop_new(NULL, FALSE);
+		g_main_loop_run(loop);
+		*/
 		static entity* rocket;
 		++num_frames;
 		Uint32 eMS = SDL_GetTicks() - start_time;
@@ -123,6 +151,7 @@ int main(int argc, char *argv[])
 		
 		vec3d_cpy(cameraPosition, player->position);
 		cameraPosition.y -= 10;
+		cameraPosition.z += 3;
 		while (SDL_PollEvent(&events))
 		{
 			if (events.type == SDL_QUIT)
@@ -155,36 +184,67 @@ int main(int argc, char *argv[])
 						//vec3d_add(player->position, player->acceleration, player->position);
 						break;
 					}
-					case SDLK_f:
+					case SDLK_q:
 					{
-						use_knife(player, test);
+						if (player->weapon_flag == WFLAG_RIFLE)
+						{
+							player->weapon_flag = WFLAG_KNIFE;
+							printf("Current Weapon Flag: Knife \n");
+						}
+						else if (player->weapon_flag == WFLAG_ROCKET)
+						{
+							player->weapon_flag = WFLAG_RIFLE;
+							printf("Current Weapon Flag: Rifle \n");
+						}
+						break;
+					}
+					case SDLK_e:
+					{
+						if (player->weapon_flag == WFLAG_KNIFE)
+						{
+							player->weapon_flag = WFLAG_RIFLE;
+							printf("Current Weapon Flag: Rifle \n");
+						}
+						else if (player->weapon_flag == WFLAG_RIFLE)
+						{
+							player->weapon_flag = WFLAG_ROCKET;
+							printf("Current Weapon Flag: Rocket \n");
+						}
+						break;
 					}
 					case SDLK_SPACE:
 					{
-						if (!rocket_fired)
+						if (player->weapon_flag == WFLAG_ROCKET)
 						{
-							rocket = rocket_init(player);
-							vec3d_set(rocket->position, player->position.x, player->position.y + 1, player->position.z);
+							if (!rocket_fired)
+							{
+								rocket = rocket_init(player);
+								vec3d_set(rocket->position, player->position.x, player->position.y + 1, player->position.z);
+							}
+							rocket_fired = true;
 						}
-						rocket_fired = true;
-						//use_knife(player, test);
+						else if(player->weapon_flag == WFLAG_KNIFE) 
+							use_knife(player, test);
+						else if (player->weapon_flag == WFLAG_RIFLE)
+						{
+							printf("Start \n");
+							/*
+							Cube sample;
+							Vec3d_set(sample.bounding.vmax, 1, 1, 1);
+							Vec3d_set(sample.bounding.vmin, -1, -1, -1);
+							sample.x = 0;
+							sample.y = 0;
+							sample.z = 0;
+							*/
+							Vec3 v0;
+							Vec3 v1;
+							Vec3d_set(v0, player->position.x, player->position.y, player->position.z);
+							Vec3d_set(v1, player->position.x, player->position.y + 100, player->position.z);
+							printf("Line Box pending \n");
+							fire_weapon(player, test, v0, v1, 25, 0);
+							printf("Cool \n");
+						}
 						printf("Enemy Health: %i\n", test->health);
-						/*
-						printf("Start \n");
-						Cube sample;
-						Vec3d_set(sample.bounding.vmax, 1, 1, 1);
-						Vec3d_set(sample.bounding.vmin, -1, -1, -1);
-						sample.x = 0;
-						sample.y = 0;
-						sample.z = 0;
-						Vec3 v0;
-						Vec3 v1;
-						Vec3d_set(v0, 2, 0, 3);
-						Vec3d_set(v1, -2, 0, -3);
-						printf("Line Box pending \n");
-						LineBoxOverlap(sample.bounding, v0, v1);
-						printf("Cool \n");
-						*/
 						break;
 					}
 				}
@@ -253,9 +313,11 @@ int main(int argc, char *argv[])
 				bGameLoopRunning = false;
 			}
 		}
+		
 		player->hb.x = player->position.x;
 		player->hb.y = player->position.y;
 		player->hb.z = player->position.z;
+		
 
 		if (rocket)
 		{
