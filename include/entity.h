@@ -81,8 +81,10 @@ void FreeEntityList();
 void FreeEntityFromList(entity* e);
 void CloseEntity();/* Frees all the fighters in the fighter list*/
 
-void Player1Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_fired, entity* rocket);
-void Player2Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_fired, entity* rocket);
+void Player1Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_fired);
+void Player2Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_fired);
+
+void update_rocket(entity* rocket, entity* player, entity* enemy, double time, lbool fired);
 
 void LoadEntity(entity* e, long character); /* Loads Fighter data from a .txt file*/
 int EditEntity(); /* Edits the current data of the Fighter, only a temporary edit*/

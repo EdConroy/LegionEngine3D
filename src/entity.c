@@ -116,13 +116,12 @@ void FreeEntityFromList(entity* e)
 	FreeEntity(&Entities[e->index]);
 	--entities_used;
 }
-void Player1Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_fired, entity* rocket)
+void Player1Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_fired, Vec3D cameraPosition)
 {
+	static entity* rocket;
 	Vec3D cOffset = { 0, -5, 0 };
 
 		char bGameLoopRunning = 1;
-		Vec3D cameraPosition = { 0, -10, 0.3 };
-		Vec3D cameraRotation = { 90, 0, 0 };
 
 		if (events.type == SDL_QUIT)
 			bGameLoopRunning = false;
@@ -206,7 +205,8 @@ void Player1Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_f
 						printf("Cool \n");
 					}
 					printf("Enemy Health: %i\n", enemy->health);
-					break;
+					printf("My Health: %i\n", player->health);
+					break;	
 				}
 			}
 		}
@@ -242,8 +242,10 @@ void Player1Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_f
 		}
 	}
 }
-void Player2Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_fired, entity* rocket)
+void Player2Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_fired, Vec3D cameraPosition)
 {
+	static entity* rocket2;
+
 	char bGameLoopRunning = 1;
 
 	if (events.type == SDL_QUIT)
@@ -303,14 +305,14 @@ void Player2Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_f
 			}
 			break;
 		}
-		case SDLK_RETURN:
+		case SDLK_F11:
 		{
 			if (player->weapon_flag == WFLAG_ROCKET)
 			{
 				if (!rocket_fired)
 				{
-					rocket = rocket_init(player);
-					vec3d_set(rocket->position, player->position.x, player->position.y + 1, player->position.z);
+					rocket2 = rocket_init(player);
+					vec3d_set(rocket2->position, player->position.x, player->position.y + 1, player->position.z);
 				}
 				rocket_fired = true;
 			}
@@ -361,6 +363,24 @@ void Player2Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_f
 		if (events.type == SDLK_ESCAPE)
 		{
 			bGameLoopRunning = false;
+		}
+	}
+}
+void update_rocket(entity* rocket, entity* player, entity* enemy, double time, lbool fired)
+{
+	if (rocket)
+	{
+		rocket_fly(rocket, player->position, enemy->position);
+
+		if (Rect3D_Overlap(rocket->hb, enemy->hb))
+		{
+			rocket_touch(rocket, enemy);
+			fired = false;
+		}
+		if ((int)time % 30 == 0)
+		{
+			FreeEntityFromList(rocket);
+			fired = false;
 		}
 	}
 }
