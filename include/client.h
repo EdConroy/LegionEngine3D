@@ -1,4 +1,6 @@
-#include "SDL_net.h"
+#include "server.h"
+
+#define MAX_CLIENTS			2
 
 typedef struct ClientData
 {
@@ -8,6 +10,9 @@ typedef struct ClientData
 	char buffer[512];
 }Client;
 
-void client_connect();
-void client_update();
+void client_init(Client* client);
+Client* get_client(int client);
+
+void client_connect(Server* s_data);
+entity* client_update(entity* e);
 void client_close();

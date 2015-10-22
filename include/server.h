@@ -1,20 +1,28 @@
+#include <stdio.h>
+#include <stdlib.h>
 #include "SDL_net.h"
+#include "entity.h"
 
-#define BLOCK_SIZE 1024
-#define PORT 2345
+#define MAX_SERVERS			1
 
-typedef struct ServerData
+typedef struct ServerData_T
 {
-	TCPsocket sd, csd;
-	IPaddress ip, *remoteIP;
-	int quit, quit2;
+
+	TCPsocket sd;
+	TCPsocket csd;
+	IPaddress ip; 
+	IPaddress* remoteIP;
 	char buffer[512];
 	char* hostname;
+
 }Server;
+
+void server_init(Server* server);
+Server* get_server(int server);
 
 void server_setup();
 void server_setup();
 void server_connect();
-void server_update();
+entity* server_update(entity* e);
 void server_close_client();
 void server_close();

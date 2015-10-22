@@ -26,7 +26,7 @@
 #include "collision.h"
 #include "game.h"
 #include "weapon.h"
-//#include "server.h"
+#include "client.h"
 
 void set_camera(Vec3D position, Vec3D rotation);
 
@@ -60,6 +60,14 @@ int main(int argc, char *argv[])
 	}; //we love you vertices!
 	entity* player;
 	entity* test;
+	Server* s_player;
+	Client* s_test;
+
+	s_player = get_server(0);
+	s_test = get_client(0);
+	
+	server_init(s_player);
+	client_init(s_test);
 
 	lbool rocket_fired = false;
 
@@ -104,35 +112,22 @@ int main(int argc, char *argv[])
 	vec3d_set(player->position, 0, 0, 0);
 	vec3d_set(test->position, 0, 0, 0);
 	
-	/*
-	GSocketService *service;
-	GError *error = NULL;
-	gboolean ret;
+	server_setup();
+	client_connect(s_player);
+	server_connect();
 
-	service = g_socket_service_new();
-	ret = g_socket_listener_add_inet_port(G_SOCKET_LISTENER(service),
-		PORT, NULL, &error);
-
-	*/
 	while (bGameLoopRunning)
 	{
-		/*
-		if (ret && error != NULL)
-		{
-			g_error("%s", error->message);
-			g_clear_error(&error);
-			return 1;
-		}
+		
+		client_update(player);
+		player = server_update(player);
+		//printf("Player \n \n ");
 
-		g_signal_connect(service,
-			"incoming",
-			G_CALLBACK(incoming_callback),
-			NULL);
+		client_update(test);
+		test = server_update(test);
+		//printf("Test \n \n ");
 
-		g_socket_service_start(service);
-		GMainLoop *loop = g_main_loop_new(NULL, FALSE);
-		g_main_loop_run(loop);
-		*/
+
 		static entity* rocket;
 		++num_frames;
 		Uint32 eMS = SDL_GetTicks() - start_time;
@@ -154,164 +149,8 @@ int main(int argc, char *argv[])
 		cameraPosition.z += 3;
 		while (SDL_PollEvent(&events))
 		{
-			if (events.type == SDL_QUIT)
-				bGameLoopRunning = false;
-
-			if (events.type == SDL_KEYDOWN)
-			{
-				switch (events.key.keysym.sym)
-				{
-					case SDLK_w:
-					{
-						vec3d_set(player->acceleration, 0, 4, 0);
-						break;
-					}
-					case SDLK_s:
-					{
-						vec3d_set(player->acceleration, 0, -4, 0);
-						//vec3d_add(player->position, player->acceleration, player->position);
-						break;
-					}
-					case SDLK_a:
-					{
-						vec3d_set(player->acceleration, -4, 0, 0);
-						//vec3d_add(player->position, player->acceleration, player->position);
-						break;
-					}
-					case SDLK_d:
-					{
-						vec3d_set(player->acceleration, 4, 0, 0);
-						//vec3d_add(player->position, player->acceleration, player->position);
-						break;
-					}
-					case SDLK_q:
-					{
-						if (player->weapon_flag == WFLAG_RIFLE)
-						{
-							player->weapon_flag = WFLAG_KNIFE;
-							printf("Current Weapon Flag: Knife \n");
-						}
-						else if (player->weapon_flag == WFLAG_ROCKET)
-						{
-							player->weapon_flag = WFLAG_RIFLE;
-							printf("Current Weapon Flag: Rifle \n");
-						}
-						break;
-					}
-					case SDLK_e:
-					{
-						if (player->weapon_flag == WFLAG_KNIFE)
-						{
-							player->weapon_flag = WFLAG_RIFLE;
-							printf("Current Weapon Flag: Rifle \n");
-						}
-						else if (player->weapon_flag == WFLAG_RIFLE)
-						{
-							player->weapon_flag = WFLAG_ROCKET;
-							printf("Current Weapon Flag: Rocket \n");
-						}
-						break;
-					}
-					case SDLK_SPACE:
-					{
-						if (player->weapon_flag == WFLAG_ROCKET)
-						{
-							if (!rocket_fired)
-							{
-								rocket = rocket_init(player);
-								vec3d_set(rocket->position, player->position.x, player->position.y + 1, player->position.z);
-							}
-							rocket_fired = true;
-						}
-						else if(player->weapon_flag == WFLAG_KNIFE) 
-							use_knife(player, test);
-						else if (player->weapon_flag == WFLAG_RIFLE)
-						{
-							printf("Start \n");
-							/*
-							Cube sample;
-							Vec3d_set(sample.bounding.vmax, 1, 1, 1);
-							Vec3d_set(sample.bounding.vmin, -1, -1, -1);
-							sample.x = 0;
-							sample.y = 0;
-							sample.z = 0;
-							*/
-							Vec3 v0;
-							Vec3 v1;
-							Vec3d_set(v0, player->position.x, player->position.y, player->position.z);
-							Vec3d_set(v1, player->position.x, player->position.y + 100, player->position.z);
-							printf("Line Box pending \n");
-							fire_weapon(player, test, v0, v1, 25, 0);
-							printf("Cool \n");
-						}
-						printf("Enemy Health: %i\n", test->health);
-						break;
-					}
-				}
-			}
-
-			if (events.type == SDL_KEYUP)
-			{
-				switch (events.key.keysym.sym)
-				{
-					case SDLK_w:
-					{
-						player->acceleration.y = 0;
-						break;
-					}
-					case SDLK_s:
-					{
-						player->acceleration.y = 0;
-						break;
-					}
-					case SDLK_a:
-					{
-						player->acceleration.x = 0;
-						break;
-					}
-					case SDLK_d:
-					{
-						player->acceleration.x = 0;
-						break;
-					}
-				}
-			}
-
-			if (events.type == SDL_MOUSEMOTION)
-			{
-				//mouseOnCamera();
-
-				SDL_GetMouseState(&mouseX, &mouseY);
-
-				// get new positions
-				// highly inaccurate
-				horiz = ((((curMouseX - mouseX)) + (1024 / 2)));
-				verti = ((curMouseY - mouseY) - (768 / 2)) * .8;
-
-				// set new positions
-				//player->rotation.z = horiz;
-				//player->rotation.x = verti;
-
-				// clamping
-				/*
-				if (player->rotation.x <= -650)
-					player->rotation.x = -650;
-				if (player->rotation.x >= -610)
-					player->rotation.x = -610;
-				*/
-				//if (player->rot.z >= -300)
-				//player->rot.z = -300;
-				//if (player->rot.z <= -400)
-				//player->rot.z = -400;
-
-				// save old positions
-				curMouseX = mouseX;
-				curMouseY = mouseY;
-			}
-			if (events.type == SDLK_ESCAPE)
-			{
-				bGameLoopRunning = false;
-			}
+			Player1Pull(events, player, test, rocket_fired, rocket);
+			Player2Pull(events, test, player, rocket_fired, rocket);
 		}
 		
 		player->hb.x = player->position.x;
@@ -385,6 +224,11 @@ int main(int argc, char *argv[])
 		/* drawing code above here! */
 		graphics3d_next_frame();
 	}
+	client_close();
+	server_close_client();
+	server_close();
+	free(s_player);
+	free(s_test);
 	FreeEntityList();
 	return 0;
 }

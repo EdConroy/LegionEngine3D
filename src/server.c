@@ -1,9 +1,29 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "server.h"
 
 Server data;
 
+Server Servers[MAX_SERVERS];
+
+TCPsocket sd;
+TCPsocket csd;
+IPaddress ip;
+IPaddress* remoteIP;
+char buffer[512];
+char* hostname;
+
+
+void server_init(Server* server)
+{
+	malloc(sizeof(Server));
+	server->hostname = "Eddy-PC";
+	server->ip.host = 3232235784;
+	server->ip.port = 2000;
+}
+Server* get_server(int server)
+{
+	if (server >= MAX_SERVERS) return NULL;
+	return &Servers[server];
+}
 void server_setup()
 {
 	if (SDLNet_Init() < 0)
@@ -11,47 +31,48 @@ void server_setup()
 		printf("SDL Init: %s\n", SDLNet_GetError());
 		exit(EXIT_FAILURE);
 	}
-	if (SDLNet_ResolveHost(&data.ip, NULL, 2000) < 0)
+	if (SDLNet_ResolveHost(&ip, NULL, 2000) < 0)
 	{
 		printf("SDL Resolve Host: %s\n", SDLNet_GetError());
 		exit(EXIT_FAILURE);
 	}
-	if (!(data.sd = SDLNet_TCP_Open(&data.ip)))
+	if (!(sd = SDLNet_TCP_Open(&ip)))
 	{
 		printf("SDL TCP Open: %s\n", SDLNet_GetError());
 		exit(EXIT_FAILURE);
 	}
+	printf("Initialization Complete\n");
 }
 void server_connect()
 {
-	if (data.csd = SDL_TCP_Accept(data.sd))
+	printf("Connecting ....\n");
+	if (csd = SDLNet_TCP_Accept(sd))
 	{
-		if (data.remoteIP = SDLNet_TCP_GetPeerAddress(data.csd))
+		printf("Getting Peer Address....\n");
+		if (remoteIP = SDLNet_TCP_GetPeerAddress(csd))
 		{
-			printf("Host connected: %x, %d\n", SDLNet_Read32(&data.remoteIP->host), SDLNet_Read16(&data.remoteIP->port));
+			printf("Host connected: %x, %d\n", SDLNet_Read32(&remoteIP->host), SDLNet_Read16(&remoteIP->port));
 		}
 		else
 			printf("SDL TCP Get Peer Address: %s\n", SDLNet_GetError());
+		//server_update();
 	}
 }
-void server_update()
+entity* server_update(entity* e)
 {
-	while (1)
+	if (SDLNet_TCP_Recv(csd, (void*) e, 1024) > 0)
 	{
-		if (SDLNet_TCP_Recv(data.csd, data.buffer, 512) > 0)
-		{
-			printf("Client Data: %s\n", data.buffer);
-		}
+		//printf("Client Data: %f,%f,%f\n", e->position.x, e->position.y, e->position.z);
+		return e;
 	}
-	server_close_client();
 }
 void server_close_client()
 {
-	SDLNet_TCP_Close(data.csd);
+	SDLNet_TCP_Close(csd);
 }
 void server_close()
 {
-	SDLNet_TCP_Close(data.sd);
+	SDLNet_TCP_Close(sd);
 	SDLNet_Quit();
 	exit(EXIT_SUCCESS);
 }
