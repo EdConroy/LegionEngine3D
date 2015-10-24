@@ -16,17 +16,9 @@
 /* Indicates which fighter is currently being played by each player */
 #define FIGHT_STRIDER				0
 
-#define ENTITYFLAG_WALKL			0
-#define ENTITYFLAG_WALKR			1
-#define ENTITYFLAG_JUMP				2
-#define ENTITYFLAG_IDLE				3
-#define ENTITYFLAG_CROUCH			4
-#define ENTITYFLAG_HITSTUN			5
-/*
-Indicates the current state of the player in the air
-*/
-#define JUMPFLAG_MOVEL				0
-#define JUMPFLAG_MOVER				1
+#define ENTITYFLAG_JUMP				0
+#define ENTITYFLAG_GROUNDED			1
+
 /*
 States used for drawing the player character
 */
@@ -51,7 +43,9 @@ typedef struct Entity_T
 	int health;
 	int index;
 	long id;
+	
 	long weapon_flag;
+	long jump_flag;
 
 	float gravity;
 

@@ -60,6 +60,8 @@ int main(int argc, char *argv[])
 	}; //we love you vertices!
 	entity* player;
 	entity* test;
+	entity* platform;
+
 	Server* s_player;
 	Client* s_test;
 
@@ -100,9 +102,11 @@ int main(int argc, char *argv[])
 	//    obj = obj_load("models/mountainvillage.obj");
 	player = CreateEntity();
 	test = CreateEntity();
+	platform = CreateEntity();
 
 	InitEntity(player, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 	InitEntity(test, "models/cube.obj", "models/cube_text.png", 1024, 1024);
+	InitEntity(platform, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 
 	num_frames = 0;
 	start_time = SDL_GetTicks();
@@ -112,7 +116,15 @@ int main(int argc, char *argv[])
 
 	vec3d_set(player->position, 0, 0, 0);
 	vec3d_set(test->position, 0, 0, 0);
-	
+	vec3d_set(platform->position, 5, 5, 0);
+
+	platform->hb.x = 5;
+	platform->hb.y = 5;
+	platform->hb.z = 0;
+	platform->hb.w = 1;
+	platform->hb.d = 1;
+	platform->hb.h = 1;
+
 	server_setup();
 	client_connect(s_player);
 	server_connect();
@@ -181,6 +193,12 @@ int main(int argc, char *argv[])
 				{
 					vec3d_set(player->acceleration, 4, 0, 0);
 					//vec3d_add(player->position, player->acceleration, player->position);
+					break;
+				}
+				case SDLK_f:
+				{
+					vec3d_set(player->acceleration, 0, 0, 10);
+					player->jump_flag = ENTITYFLAG_GROUNDED;
 					break;
 				}
 				case SDLK_q:
@@ -264,6 +282,12 @@ int main(int argc, char *argv[])
 				case SDLK_d:
 				{
 					player->acceleration.x = 0;
+					break;
+				}
+				case SDLK_f:
+				{
+					player->acceleration.z = 0;
+					player->jump_flag = ENTITYFLAG_JUMP;
 					break;
 				}
 				}
@@ -401,6 +425,20 @@ int main(int argc, char *argv[])
 		test->hb.y = test->position.y;
 		test->hb.z = test->position.z;
 
+		if (Rect3D_Overlap(player->hb, platform->hb))
+		{
+			player->jump_flag = ENTITYFLAG_GROUNDED;
+			vec3d_set(player->acceleration, 0, 0, 0);
+			vec3d_set(player->position, platform->position.x, platform->position.y, platform->position.z + 2);
+			printf("Called");
+		}
+		else if (!Rect3D_Overlap(player->hb, platform->hb) && player->position.z > platform->position.z + 2 && 
+			player->jump_flag == ENTITYFLAG_GROUNDED)
+		{
+			player->jump_flag = ENTITYFLAG_JUMP;
+			printf("Called Me");
+		}
+
 		if (rocket)
 		{
 			rocket_fly(rocket, player->position, test->position);
@@ -445,6 +483,9 @@ int main(int argc, char *argv[])
 		
 		graphics3d_frame_begin();
 		game_update();
+
+		if (player->position.z < 0)
+			player->position.z = 0;
 
 		glPushMatrix();
 		set_camera(
@@ -495,6 +536,14 @@ int main(int argc, char *argv[])
 			test->obj,
 			test->position,
 			test->rotation,
+			vec3d(1, 1, 1),
+			vec4d(1, 1, 1, 1),
+			test->texture
+			);
+		obj_draw(
+			platform->obj,
+			platform->position,
+			platform->rotation,
 			vec3d(1, 1, 1),
 			vec4d(1, 1, 1, 1),
 			test->texture

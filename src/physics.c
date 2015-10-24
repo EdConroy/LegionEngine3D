@@ -51,7 +51,7 @@ void SpaceRemoveBody(space* sp, Body* body)
 }
 static void space_add_gravity(Body* body)
 {
-	body->owner->velocity.z -= body->owner->gravity + 15 * .01;
+	body->owner->velocity.z -= body->owner->gravity * .0001;
 	vec3d_add(body->owner->position, body->owner->position, body->owner->velocity);
 }
 static void space_accelerate(Body* body)
@@ -60,6 +60,7 @@ static void space_accelerate(Body* body)
 
 	body->velocity.x = body->owner->acceleration.x * 2;
 	body->velocity.y = body->owner->acceleration.y * 2;
+	body->velocity.z = body->owner->acceleration.z * 2;
 }
 static void space_body_update(space *space, Body *body)
 {
@@ -121,7 +122,8 @@ static void space_update(space *space)
 		body = (Body*) it->data;
 
 		space_body_update(space, (Body*)it->data);
-		//space_add_gravity(body);
+		if (body->owner->jump_flag == ENTITYFLAG_JUMP || body->owner->position.z >= 10)
+			space_add_gravity(body);
 		space_accelerate(body);
 
 		vec3d_scale(space->stepVector, body->velocity, space->stepFactor);
