@@ -125,19 +125,28 @@ int main(int argc, char *argv[])
 	platform->hb.d = 1;
 	platform->hb.h = 1;
 
+	lbool connected = false;
+
 	server_setup();
-	client_connect(s_player);
-	server_connect();
+	//client_connect(s_player);
+	while (!connected)
+	{
+		if (server_connect())
+		{
+			connected = true;
+		}
+	}
 
 	while (bGameLoopRunning)
 	{
 		
-		client_update(player);
-		player = server_update(player);
+		//client_update(player);
+		//player = server_update(player);
 		//printf("Player \n \n ");
 
-		client_update(test);
+		//client_update(test);
 		test = server_update(test);
+		player = server_send(player);
 		//printf("Test \n \n ");
 
 

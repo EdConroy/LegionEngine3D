@@ -15,4 +15,5 @@ Client* get_client(int client);
 
 void client_connect(Server* s_data);
 entity* client_update(entity* e);
+entity* client_recieve(entity* e);
 void client_close();

@@ -22,7 +22,8 @@ Server* get_server(int server);
 
 void server_setup();
 void server_setup();
-void server_connect();
+lbool server_connect();
 entity* server_update(entity* e);
+entity* server_send(entity* e);
 void server_close_client();
 void server_close();

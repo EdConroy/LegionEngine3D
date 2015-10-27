@@ -43,7 +43,7 @@ void server_setup()
 	}
 	printf("Initialization Complete\n");
 }
-void server_connect()
+lbool server_connect()
 {
 	printf("Connecting ....\n");
 	if (csd = SDLNet_TCP_Accept(sd))
@@ -52,19 +52,34 @@ void server_connect()
 		if (remoteIP = SDLNet_TCP_GetPeerAddress(csd))
 		{
 			printf("Host connected: %x, %d\n", SDLNet_Read32(&remoteIP->host), SDLNet_Read16(&remoteIP->port));
+			return true;
 		}
 		else
 			printf("SDL TCP Get Peer Address: %s\n", SDLNet_GetError());
 		//server_update();
 	}
+	return false;
 }
 entity* server_update(entity* e)
 {
 	if (SDLNet_TCP_Recv(csd, (void*) e, 1024) > 0)
 	{
-		//printf("Client Data: %f,%f,%f\n", e->position.x, e->position.y, e->position.z);
+		printf("Client Data: %f,%f,%f\n", e->position.x, e->position.y, e->position.z);
 		return e;
 	}
+}
+entity* server_send(entity* e)
+{
+	//printf("Write something:\n>");
+	//scanf("%s", data.buffer);
+
+	//int len = strlen(data.buffer) + 1;
+	if (SDLNet_TCP_Send(csd, (void*)e, 1024) < 0)
+	{
+		printf("Failed to send: %s\n", SDLNet_GetError());
+		exit(EXIT_FAILURE);
+	}
+	return e;
 }
 void server_close_client()
 {
