@@ -128,7 +128,10 @@ int main(int argc, char *argv[])
 	lbool connected = false;
 
 	server_setup();
-	//client_connect(s_player);
+	client_connect(s_player);
+	server_connect();
+
+	/*
 	while (!connected)
 	{
 		if (server_connect())
@@ -136,17 +139,17 @@ int main(int argc, char *argv[])
 			connected = true;
 		}
 	}
+	*/
 
 	while (bGameLoopRunning)
 	{
 		
-		//client_update(player);
-		//player = server_update(player);
+		client_update(test);
 		//printf("Player \n \n ");
 
-		//client_update(test);
 		test = server_update(test);
 		player = server_send(player);
+		client_recieve(player);
 		//printf("Test \n \n ");
 
 

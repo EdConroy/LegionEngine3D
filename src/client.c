@@ -17,8 +17,8 @@ char buffer[512];
 void client_init(Client* client)
 {
 	malloc(sizeof(Client));
-	client->ip.host = 180884531;
-	//client->ip.host = 2130706433;
+	//client->ip.host = 180884531;
+	client->ip.host = 2130706433;
 	client->ip.port = 2000;
 }
 Client* get_client(int client)
@@ -47,7 +47,7 @@ void client_connect(Server* s_data)
 lbool client_commit()
 {
 	printf("Connecting ....\n");
-	if (test = SDLNet_TCP_Accept(sd))
+	if (test = SDLNet_TCP_Accept(data.sd))
 	{
 		printf("Getting Peer Address....\n");
 		if (remoteIP = SDLNet_TCP_GetPeerAddress(test))
@@ -75,9 +75,9 @@ entity* client_update(entity* e)
 }
 entity* client_recieve(entity* e)
 {
-	if (SDLNet_TCP_Recv(sData.sd, (void*)e, 1024) > 0)
+	if (SDLNet_TCP_Recv(data.sd, (void*)e, 1024) > 0)
 	{
-		//printf("Client Data: %f,%f,%f\n", e->position.x, e->position.y, e->position.z);
+		printf("Server Data: %f,%f,%f\n", e->position.x, e->position.y, e->position.z);
 		return e;
 	}
 }
