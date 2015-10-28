@@ -1,15 +1,31 @@
-#include <glib.h>
-#include <gio\gio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "SDL_net.h"
 #include "entity.h"
 
-#define BLOCK_SIZE 1024
-#define PORT 2345
+#define MAX_SERVERS			1
 
-struct ConnData
+typedef struct ServerData_T
 {
-	GSocketConnection* connection;
-	char message[BLOCK_SIZE];
-};
 
-void message_ready(GObject* source_obj, GAsyncResult* res, gpointer userdata);
-static lbool incoming_callback(GSocketService* service, GSocketConnection* connection, GObject* source_object, gpointer user_data);
+	TCPsocket sd;
+	TCPsocket csd;
+	IPaddress ip; 
+	IPaddress* remoteIP;
+	char buffer[512];
+	char* hostname;
+
+}Server;
+
+void server_init(Server* server);
+Server* get_server(int server);
+
+void server_setup();
+void server_setup();
+lbool server_connect();
+entity* server_update(entity* e);
+space* server_update_space(space* s);
+entity* server_send(entity* e);
+space* server_send_space(space* s);
+void server_close_client();
+void server_close();
