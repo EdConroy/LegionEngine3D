@@ -17,7 +17,6 @@ void server_init(Server* server)
 {
 	malloc(sizeof(Server));
 	server->hostname = "Eddy-PC";
-	server->ip.host = 3232235784;
 	server->ip.port = 2000;
 }
 Server* get_server(int server)
