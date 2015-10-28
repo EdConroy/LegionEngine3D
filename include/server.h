@@ -10,7 +10,7 @@ typedef struct ServerData_T
 
 	TCPsocket sd;
 	TCPsocket csd;
-	IPaddress ip; 
+	IPaddress ip;
 	IPaddress* remoteIP;
 	char buffer[512];
 	char* hostname;

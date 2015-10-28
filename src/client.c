@@ -66,7 +66,7 @@ entity* client_update(entity* e)
 	//scanf("%s", data.buffer);
 
 	data.len = strlen(data.buffer) + 1;
-	if (SDLNet_TCP_Send(data.sd, (void*) e, 1024) < 0)
+	if (SDLNet_TCP_Send(data.sd, (void*)e, 1024) < 0)
 	{
 		printf("Failed to send: %s\n", SDLNet_GetError());
 		exit(EXIT_FAILURE);
@@ -77,7 +77,7 @@ entity* client_recieve(entity* e)
 {
 	if (SDLNet_TCP_Recv(data.sd, (void*)e, 1024) > 0)
 	{
-		printf("Server Data: %f,%f,%f\n", e->position.x, e->position.y, e->position.z);
+		printf("Server Data: %f,%f,%f, %i\n", e->position.x, e->position.y, e->position.z, e->health);
 		return e;
 	}
 }

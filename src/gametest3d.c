@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
 
 	s_player = get_server(0);
 	s_test = get_client(0);
-	
+
 	server_init(s_player);
 	client_init(s_test);
 
@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 
 	bgobj = obj_load("models/mountainvillage.obj");
 	bgtext = LoadSprite("models/mountain_text.png", 1024, 1024);
-	
+
 	game_init();
 	InitEntityList();
 
@@ -134,16 +134,16 @@ int main(int argc, char *argv[])
 	/*
 	while (!connected)
 	{
-		if (server_connect())
-		{
-			connected = true;
-		}
+	if (server_connect())
+	{
+	connected = true;
+	}
 	}
 	*/
 
 	while (bGameLoopRunning)
 	{
-		
+
 		client_update(test);
 		//printf("Player \n \n ");
 
@@ -169,12 +169,15 @@ int main(int argc, char *argv[])
 		int horiz, verti;
 		int i;
 
+		if (player->health < 0) player->health = 0;
+		if (test->health < 0) test->health = 0;
+
 		i = 0;
-		
+
 		vec3d_cpy(cameraPosition, player->position);
 		cameraPosition.y -= 10;
 		cameraPosition.z += 3;
-		
+
 		while (SDL_PollEvent(&events))
 		{
 
@@ -428,11 +431,11 @@ int main(int argc, char *argv[])
 				}
 			}
 		}
-		
+
 		player->hb.x = player->position.x;
 		player->hb.y = player->position.y;
 		player->hb.z = player->position.z;
-		
+
 		test->hb.x = test->position.x;
 		test->hb.y = test->position.y;
 		test->hb.z = test->position.z;
@@ -444,7 +447,7 @@ int main(int argc, char *argv[])
 			vec3d_set(player->position, platform->position.x, platform->position.y, platform->position.z + 2);
 			printf("Called");
 		}
-		else if (!Rect3D_Overlap(player->hb, platform->hb) && player->position.z > platform->position.z + 2 && 
+		else if (!Rect3D_Overlap(player->hb, platform->hb) && player->position.z > platform->position.z + 2 &&
 			player->jump_flag == ENTITYFLAG_GROUNDED)
 		{
 			player->jump_flag = ENTITYFLAG_JUMP;
@@ -492,7 +495,7 @@ int main(int argc, char *argv[])
 			}
 		}
 
-		
+
 		graphics3d_frame_begin();
 		game_update();
 

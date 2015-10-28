@@ -118,8 +118,8 @@ static void space_update(space *space)
 	for (it = space->bodylist; it != NULL; it = g_list_next(it))
 	{
 		if (!it->data)continue;
-		
-		body = (Body*) it->data;
+
+		body = (Body*)it->data;
 
 		space_body_update(space, (Body*)it->data);
 		if (body->owner->jump_flag == ENTITYFLAG_JUMP || body->owner->position.z >= 10)
