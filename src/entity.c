@@ -37,6 +37,7 @@ entity* CreateEntity()
 entity * getEntity(int player)
 {
 	if (player >= MAX_ENTITIES) return NULL;
+	Entities[player].id = player;
 	return &Entities[player];
 }
 /* Sets the first player's data */
@@ -77,6 +78,10 @@ void FreeEntity(entity* e)
 	obj_free(e->obj);
 	FreeSprite(e->texture);
 	e->health = 0;
+	e->texture = NULL;
+	e->obj = NULL;
+	e->id = NULL;
+	e->index = NULL;
 
 	vec3d_set(e->position, 0, 0, 0);
 	vec3d_set(e->velocity, 0, 0, 0);
@@ -113,9 +118,9 @@ void FreeEntityList()
 }
 void FreeEntityFromList(entity* e)
 {
-	if (&Entities[e->index] == NULL)
+	if (&Entities[e->id] == NULL)
 		printf("No such entity exists");
-	FreeEntity(&Entities[e->index]);
+	FreeEntity(&Entities[e->id]);
 	--entities_used;
 }
 void Player1Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_fired, Vec3D cameraPosition)

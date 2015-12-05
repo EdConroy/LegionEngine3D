@@ -60,16 +60,17 @@ int main(int argc, char *argv[])
 	}; //we love you vertices!
 	entity* player;
 	entity* test;
+	entity* pickup;
 	entity* platform;
 
-	Server* s_player;
-	Client* s_test;
+	//Server* s_player;
+	//Client* s_test;
 
-	s_player = get_server(0);
-	s_test = get_client(0);
+	//s_player = get_server(0);
+	//s_test = get_client(0);
 
-	server_init(s_player);
-	client_init(s_test);
+	//server_init(s_player);
+	//client_init(s_test);
 
 	lbool rocket_fired = false;
 	lbool rocket_fired2 = false;
@@ -103,10 +104,12 @@ int main(int argc, char *argv[])
 	player = CreateEntity();
 	test = CreateEntity();
 	platform = CreateEntity();
+	pickup = CreateEntity();
 
 	InitEntity(player, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 	InitEntity(test, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 	InitEntity(platform, "models/cube.obj", "models/cube_text.png", 1024, 1024);
+	InitEntity(pickup, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 
 	num_frames = 0;
 	start_time = SDL_GetTicks();
@@ -117,6 +120,14 @@ int main(int argc, char *argv[])
 	vec3d_set(player->position, 0, 0, 0);
 	vec3d_set(test->position, 0, 0, 0);
 	vec3d_set(platform->position, 5, 5, 0);
+	vec3d_set(pickup->position, 5, -5, 0);
+
+	pickup->hb.x = 5;
+	pickup->hb.y = -5;
+	pickup->hb.z = 0;
+	pickup->hb.w = 1;
+	pickup->hb.d = 1;
+	pickup->hb.h = 1;
 
 	platform->hb.x = 5;
 	platform->hb.y = 5;
@@ -127,9 +138,9 @@ int main(int argc, char *argv[])
 
 	lbool connected = false;
 
-	server_setup();
-	client_connect(s_player);
-	server_connect();
+	//server_setup();
+	//client_connect(s_player);
+	//server_connect();
 
 	/*
 	while (!connected)
@@ -144,12 +155,12 @@ int main(int argc, char *argv[])
 	while (bGameLoopRunning)
 	{
 
-		client_update(test);
+		//client_update(test);
 		//printf("Player \n \n ");
 
-		test = server_update(test);
-		player = server_send(player);
-		client_recieve(player);
+		//test = server_update(test);
+		//player = server_send(player);
+		//client_recieve(player);
 		//printf("Test \n \n ");
 
 
@@ -177,6 +188,8 @@ int main(int argc, char *argv[])
 		vec3d_cpy(cameraPosition, player->position);
 		cameraPosition.y -= 10;
 		cameraPosition.z += 3;
+
+		weapon_spawn_collision(player, pickup, WFLAG_ROCKET);
 
 		while (SDL_PollEvent(&events))
 		{
@@ -214,6 +227,13 @@ int main(int argc, char *argv[])
 				{
 					vec3d_set(player->acceleration, 0, 0, 10);
 					player->jump_flag = ENTITYFLAG_GROUNDED;
+					break;
+				}
+				case SDLK_g:
+				{
+					if (player->weapon_flag == WFLAG_KNIFE) printf("Current Weapon Flag: KNIFE\n");
+					else if (player->weapon_flag == WFLAG_RIFLE) printf("Current Weapon Flag: RIFLE\n");
+					else if (player->weapon_flag == WFLAG_ROCKET) printf("Current Weapon Flag: ROCKET\n");
 					break;
 				}
 				case SDLK_q:
@@ -563,16 +583,27 @@ int main(int argc, char *argv[])
 			vec4d(1, 1, 1, 1),
 			test->texture
 			);
+		if (pickup)
+		{
+			obj_draw(
+				pickup->obj,
+				pickup->position,
+				pickup->rotation,
+				vec3d(1, 1, 1),
+				vec4d(1, 1, 1, 1),
+				texture
+				);
+		}
 		if (r > 360)r -= 360;
 		glPopMatrix();
 		/* drawing code above here! */
 		graphics3d_next_frame();
 	}
-	client_close();
-	server_close_client();
-	server_close();
-	free(s_player);
-	free(s_test);
+	//client_close();
+	//server_close_client();
+	//server_close();
+	//free(s_player);
+	//free(s_test);
 	FreeEntityList();
 	return 0;
 }
