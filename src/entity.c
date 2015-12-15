@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "game.h"
+#include "stdio.h"
 
 extern Game game;
 
@@ -102,7 +103,6 @@ void FreeEntity(entity* e)
 
 	SpaceRemoveBody(game.space, &e->body);
 	e->body.owner = NULL;
-
 	e = NULL;
 	free(e);
 }
@@ -391,13 +391,204 @@ void update_rocket(entity* rocket, entity* player, entity* enemy, double time, l
 		}
 	}
 }
-/* Loads the fighter from a text file into the game */
-void LoadEntity(entity* e, long character)
-{
 
+void entity_load(entity* e)
+{
+	char* filepath;
+	if (e->type == EFLAG_PICKUP)
+	{
+		filepath = "levels/WeaponPickupData.txt";
+	}
+	else if (e->type == EFLAG_PLATFORM)
+	{
+		filepath = "levels/PlatformData.txt";
+	}
+	char buffer[255];
+	FILE* pFile = NULL;
+	pFile = fopen(filepath, "r");
+	if (!pFile)
+	{
+		fprintf("file not found: ", filepath);
+		return;
+	}
+	if (fscanf(pFile, "%s", buffer))
+	{
+		if (strcmp(buffer, "positionx:") == 0)
+		{
+			fscanf(pFile, "%f", &e->position.x);
+			fscanf(pFile, "%s", buffer);
+			vec3d_set(e->position, e->position.x, e->position.y, e->position.z);
+		}
+		if (strcmp(buffer, "positiony:") == 0)
+		{
+			fscanf(pFile, "%f", &e->position.y);
+			fscanf(pFile, "%s", buffer);
+			vec3d_set(e->position, e->position.x, e->position.y, e->position.z);
+		}
+
+		if (strcmp(buffer, "positionz:") == 0)
+		{
+			fscanf(pFile, "%f", &e->position.z);
+			fscanf(pFile, "%s", buffer);
+			vec3d_set(e->position, e->position.x, e->position.y, e->position.z);
+		}
+
+		if (strcmp(buffer, "hitboxx:") == 0)
+		{
+			fscanf(pFile, "%f", &e->hb.x);
+			fscanf(pFile, "%s", buffer);
+		}
+
+		if (strcmp(buffer, "hitboxy:") == 0)
+		{
+			fscanf(pFile, "%f", &e->hb.y);
+			fscanf(pFile, "%s", buffer);
+		}
+
+		if (strcmp(buffer, "hitboxz:") == 0)
+		{
+			fscanf(pFile, "%f", &e->hb.z);
+			fscanf(pFile, "%s", buffer);
+		}
+
+		if (strcmp(buffer, "hitboxw:") == 0)
+		{
+			fscanf(pFile, "%f", &e->hb.w);
+			fscanf(pFile, "%s", buffer);
+		}
+		if (strcmp(buffer, "hitboxh:") == 0)
+		{
+			fscanf(pFile, "%f", &e->hb.h);
+			fscanf(pFile, "%s", buffer);
+		}
+
+		if (strcmp(buffer, "hitboxd:") == 0)
+		{
+			fscanf(pFile, "%f", &e->hb.d);
+			fscanf(pFile, "%s", buffer);
+		}
+
+		if (strcmp(buffer, "weaponflag:") == 0)
+		{
+			fscanf(pFile, "%i", &e->weapon_flag);
+			fscanf(pFile, "%s", buffer);
+		}
+	}
+	fclose(pFile);
 }
 /* Allows the user to edit the data of any fighter */
-int EditEntity()
+int entity_edit()
 {
+	unsigned int value = 0;
+
+	float pos_x = 0;
+	float pos_y = 0;
+	float pos_z = 0;
+	unsigned int hb_x = 0;
+	unsigned int hb_y = 0;
+	unsigned int hb_z = 0;
+	unsigned int hb_w = 0;
+	unsigned int hb_h = 0;
+	unsigned int hb_d = 0;
+	unsigned int weapon = 0;
+
+
+	fprintf(stdout, "Do you want to edit the map?\n 1 = no\n 0 = yes\n");
+	scanf("%d", &value);
+	if (value != 0)
+	{
+		return 1;
+	}
+	fprintf(stdout, "What do you want to add?:\n 1 - Weapon Pickup\n 2 - Platform\n");
+	scanf("%d", &value);
+	char* filepath;
+
+	if (value == 1)
+	{
+		filepath = "levels/WeaponPickupData.txt";
+	}
+	else if (value == 2)
+	{
+		filepath = "levels/PlatformData.txt";
+	}
+	else
+	{
+		printf("Invalid Selection");
+	}
+
+	FILE* pFile = NULL;
+	pFile = fopen(filepath, "w+");
+
+	if (!pFile)
+	{
+		fprintf(stdout, "file not found: ", filepath);
+		return 1;
+	}
+
+	fprintf(stdout, "Position X: \n");
+	scanf("%f", &pos_x);
+
+	fprintf(stdout, "Position Y: \n");
+	scanf("%f", &pos_y);
+
+	fprintf(stdout, "Position Z: \n");
+	scanf("%f", &pos_z);
+
+	fprintf(stdout, "Hitbox X: \n");
+	scanf("%d", &hb_x);
+
+	fprintf(stdout, "Hitbox Y: \n");
+	scanf("%d", &hb_y);
+
+	fprintf(stdout, "Hitbox Z: \n");
+	scanf("%d", &hb_z);
+
+	fprintf(stdout, "Hitbox W: \n");
+	scanf("%d", &hb_w);
+
+	fprintf(stdout, "Hitbox H: \n");
+	scanf("%d", &hb_h);
+
+	fprintf(stdout, "Hitbox D: \n");
+	scanf("%d", &hb_d);
+
+	if (value == 1)
+	{
+		fprintf(stdout, "Weapon Flag: 0 - Rifle 1 - Knife 2 - Rocket\n");
+		scanf("%d", &weapon);
+
+		if (weapon > 2) weapon = 2;
+		else if (weapon < 0) weapon = 0;
+	}
+
+	fprintf(pFile, "positionx: %f", pos_x);
+	fprintf(pFile, "\n");
+	fprintf(pFile, "positiony: %f", pos_y);
+	fprintf(pFile, "\n");
+	fprintf(pFile, "positionz: %f", pos_z);
+	fprintf(pFile, "\n");
+	fprintf(pFile, "hitboxx: %d", hb_x);
+	fprintf(pFile, "\n");
+	fprintf(pFile, "hitboxy: %d", hb_y);
+	fprintf(pFile, "\n");
+	fprintf(pFile, "hitboxz: %d", hb_z);
+	fprintf(pFile, "\n");
+	fprintf(pFile, "hitboxw: %d", hb_w);
+	fprintf(pFile, "\n");
+	fprintf(pFile, "hitboxh: %d", hb_h);
+	fprintf(pFile, "\n");
+	fprintf(pFile, "hitboxd: %d", hb_d);
+	fprintf(pFile, "\n");
+
+	if (value == 1)
+	{
+		fprintf(pFile, "weaponflag: %d", weapon);
+		fprintf(pFile, "\n");
+	}
+
+	fprintf(stdout, "Done!\n");
+
+	fclose(pFile);
+
 	return 0;
 }

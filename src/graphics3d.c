@@ -177,5 +177,19 @@ void graphics3d_setup_default_light()
 
 }
 
+void graphics3d_draw2d(int sw, int sh)
+{
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_TEXTURE_2D);
+	//glDisable(GL_LIGHTING);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(-sw / 2, sw / 2, -sh / 2, sh / 2, -1000.0, 1000.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+}
 
 /*eol@eof*/

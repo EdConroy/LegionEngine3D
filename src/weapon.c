@@ -88,11 +88,11 @@ void use_knife(entity* self, entity* enemy)
 	}
 }
 
-void weapon_spawn_collision(entity* other, entity* self, int weap_flag)
+void weapon_spawn_collision(entity* other, entity* self)
 {
 	if (Rect3D_Overlap(other->hb, self->hb))
 	{
-		other->weapon_flag = weap_flag;
-		FreeEntityFromList(self);
+		other->weapon_flag = self->weapon_flag;
+		self->flag = ENFLAG_DEAD;
 	}
 }

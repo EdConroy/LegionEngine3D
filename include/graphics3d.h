@@ -61,4 +61,6 @@ void graphics3d_frame_begin();
 */
 void graphics3d_next_frame();
 
+void graphics3d_draw2d(int sw, int sh);
+
 #endif

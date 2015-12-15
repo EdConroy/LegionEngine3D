@@ -1,5 +1,5 @@
-#ifndef _FIGHTER_
-#define _FIGHTER_
+#ifndef _ENTITY_
+#define _ENTITY_
 
 #include <time.h>
 #include "sprite.h"
@@ -14,20 +14,16 @@
 #define MAX_ENTITIES				1000000
 
 /* Indicates which fighter is currently being played by each player */
-#define FIGHT_STRIDER				0
 
 #define ENTITYFLAG_JUMP				0
 #define ENTITYFLAG_GROUNDED			1
 
-/*
-States used for drawing the player character
-*/
-#define ANIMFLAG_WALKL				0
-#define ANIMFLAG_WALKR				1
-#define ANIMFLAG_JUMP				2
-#define ANIMFLAG_IDLE				3
-#define ANIMFLAG_CROUCH				4
-#define ANIMFLAG_HITSTUN			5
+#define EFLAG_PLAYER				0
+#define EFLAG_PICKUP				1
+#define EFLAG_PLATFORM				2
+
+#define ENFLAG_DEAD					0
+#define ENFLAG_ALIVE				1
 
 #define WFLAG_RIFLE					0
 #define WFLAG_KNIFE					1
@@ -43,6 +39,8 @@ typedef struct Entity_T
 	int health;
 	int index;
 	long id;
+	long type;
+	long flag;
 	
 	long weapon_flag;
 	long jump_flag;
@@ -80,7 +78,7 @@ void Player2Pull(SDL_Event events, entity* player, entity* enemy, lbool rocket_f
 
 void update_rocket(entity* rocket, entity* player, entity* enemy, double time, lbool fired);
 
-void LoadEntity(entity* e, long character); /* Loads Fighter data from a .txt file*/
-int EditEntity(); /* Edits the current data of the Fighter, only a temporary edit*/
+void entity_load(entity* e);
+int entity_edit();
 
 #endif

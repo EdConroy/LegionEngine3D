@@ -62,6 +62,8 @@ int main(int argc, char *argv[])
 	entity* test;
 	entity* pickup;
 	entity* platform;
+	entity* new_pickup;
+	entity* new_platform;
 
 	//Server* s_player;
 	//Client* s_test;
@@ -105,11 +107,31 @@ int main(int argc, char *argv[])
 	test = CreateEntity();
 	platform = CreateEntity();
 	pickup = CreateEntity();
+	new_pickup = CreateEntity();
+	new_platform = CreateEntity();
 
 	InitEntity(player, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 	InitEntity(test, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 	InitEntity(platform, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 	InitEntity(pickup, "models/cube.obj", "models/cube_text.png", 1024, 1024);
+	InitEntity(new_pickup, "models/cube.obj", "models/cube_text.png", 1024, 1024);
+
+
+	player->type = EFLAG_PLAYER;
+	test->type = EFLAG_PLAYER;
+	
+	platform->type = EFLAG_PLATFORM;
+	new_platform = EFLAG_PLATFORM;
+	
+	pickup->type = EFLAG_PICKUP;
+	new_pickup->type = EFLAG_PICKUP;
+
+	pickup->flag = ENFLAG_ALIVE;
+	new_pickup->flag = ENFLAG_ALIVE;
+
+	entity_edit();
+	entity_load(new_pickup);
+	//entity_load(new_platform);
 
 	num_frames = 0;
 	start_time = SDL_GetTicks();
@@ -121,6 +143,8 @@ int main(int argc, char *argv[])
 	vec3d_set(test->position, 0, 0, 0);
 	vec3d_set(platform->position, 5, 5, 0);
 	vec3d_set(pickup->position, 5, -5, 0);
+
+	pickup->weapon_flag = WFLAG_ROCKET;
 
 	pickup->hb.x = 5;
 	pickup->hb.y = -5;
@@ -189,7 +213,8 @@ int main(int argc, char *argv[])
 		cameraPosition.y -= 10;
 		cameraPosition.z += 3;
 
-		weapon_spawn_collision(player, pickup, WFLAG_ROCKET);
+		weapon_spawn_collision(player, pickup);
+		weapon_spawn_collision(player, new_pickup);
 
 		while (SDL_PollEvent(&events))
 		{
@@ -473,7 +498,22 @@ int main(int argc, char *argv[])
 			player->jump_flag = ENTITYFLAG_JUMP;
 			printf("Called Me");
 		}
-
+		if (new_platform)
+		{
+			if (Rect3D_Overlap(player->hb, platform->hb))
+			{
+				player->jump_flag = ENTITYFLAG_GROUNDED;
+				vec3d_set(player->acceleration, 0, 0, 0);
+				vec3d_set(player->position, platform->position.x, platform->position.y, platform->position.z + 2);
+				printf("Called");
+			}
+			else if (!Rect3D_Overlap(player->hb, platform->hb) && player->position.z > platform->position.z + 2 &&
+				player->jump_flag == ENTITYFLAG_GROUNDED)
+			{
+				player->jump_flag = ENTITYFLAG_JUMP;
+				printf("Called Me");
+			}
+		}
 		if (rocket)
 		{
 			rocket_fly(rocket, player->position, test->position);
@@ -583,7 +623,7 @@ int main(int argc, char *argv[])
 			vec4d(1, 1, 1, 1),
 			test->texture
 			);
-		if (pickup)
+		if (pickup->flag == ENFLAG_ALIVE)
 		{
 			obj_draw(
 				pickup->obj,
@@ -594,6 +634,30 @@ int main(int argc, char *argv[])
 				texture
 				);
 		}
+		if (new_pickup->flag == ENFLAG_ALIVE)
+		{
+			obj_draw(
+				obj,
+				new_pickup->position,
+				new_pickup->rotation,
+				vec3d(1, 1, 1),
+				vec4d(1, 1, 1, 1),
+				texture
+				);
+		}
+		/*
+		if (new_platform)
+		{
+			obj_draw(
+				new_platform->obj,
+				new_platform->position,
+				new_platform->rotation,
+				vec3d(1, 1, 1),
+				vec4d(1, 1, 1, 1),
+				texture
+				);
+		}
+		*/
 		if (r > 360)r -= 360;
 		glPopMatrix();
 		/* drawing code above here! */
