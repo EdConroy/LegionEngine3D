@@ -34,6 +34,8 @@
 /* conversion factor for converting from degrees to radians*/
 #define DEGTORAD  0.017453292519943295769236907684886
 
+#define MAX_TEXT 64
+
 /**
 * @brief initialize the 3d graphics system
 * @param sw the screen width you want

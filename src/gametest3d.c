@@ -20,12 +20,8 @@
 */
 #include "simple_logger.h"
 #include "shader.h"
-#include "obj.h"
-#include "vector.h"
-#include "sprite.h"
 #include "collision.h"
 #include "game.h"
-#include "weapon.h"
 #include "client.h"
 
 void set_camera(Vec3D position, Vec3D rotation);
@@ -65,14 +61,14 @@ int main(int argc, char *argv[])
 	entity* new_pickup;
 	entity* new_platform;
 
-	//Server* s_player;
-	//Client* s_test;
+	Server* s_player;
+	Client* s_test;
 
-	//s_player = get_server(0);
-	//s_test = get_client(0);
+	s_player = get_server(0);
+	s_test = get_client(0);
 
-	//server_init(s_player);
-	//client_init(s_test);
+	server_init(s_player);
+	client_init(s_test);
 
 	lbool rocket_fired = false;
 	lbool rocket_fired2 = false;
@@ -115,14 +111,15 @@ int main(int argc, char *argv[])
 	InitEntity(platform, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 	InitEntity(pickup, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 	InitEntity(new_pickup, "models/cube.obj", "models/cube_text.png", 1024, 1024);
+	InitEntity(new_platform, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 
 
 	player->type = EFLAG_PLAYER;
 	test->type = EFLAG_PLAYER;
-	
+
 	platform->type = EFLAG_PLATFORM;
 	new_platform = EFLAG_PLATFORM;
-	
+
 	pickup->type = EFLAG_PICKUP;
 	new_pickup->type = EFLAG_PICKUP;
 
@@ -162,9 +159,9 @@ int main(int argc, char *argv[])
 
 	lbool connected = false;
 
-	//server_setup();
-	//client_connect(s_player);
-	//server_connect();
+	server_setup();
+	client_connect(s_player);
+	server_connect();
 
 	/*
 	while (!connected)
@@ -179,17 +176,21 @@ int main(int argc, char *argv[])
 	while (bGameLoopRunning)
 	{
 
-		//client_update(test);
+		client_update(test);
 		//printf("Player \n \n ");
 
-		//test = server_update(test);
-		//player = server_send(player);
-		//client_recieve(player);
+		server_update(test);
+		
+		server_send(player);
+		
+		client_recieve(player);
 		//printf("Test \n \n ");
 
 
 		static entity* rocket;
 		static entity* rocket_2;
+
+		static entity* grenade;
 
 		++num_frames;
 		Uint32 eMS = SDL_GetTicks() - start_time;
@@ -227,25 +228,22 @@ int main(int argc, char *argv[])
 				{
 				case SDLK_w:
 				{
-					vec3d_set(player->acceleration, 0, 4, 0);
+					vec3d_set(player->acceleration, 0, 6, 0);
 					break;
 				}
 				case SDLK_s:
 				{
-					vec3d_set(player->acceleration, 0, -4, 0);
-					//vec3d_add(player->position, player->acceleration, player->position);
+					vec3d_set(player->acceleration, 0, -6, 0);
 					break;
 				}
 				case SDLK_a:
 				{
-					vec3d_set(player->acceleration, -4, 0, 0);
-					//vec3d_add(player->position, player->acceleration, player->position);
+					vec3d_set(player->acceleration, -6, 0, 0);
 					break;
 				}
 				case SDLK_d:
 				{
-					vec3d_set(player->acceleration, 4, 0, 0);
-					//vec3d_add(player->position, player->acceleration, player->position);
+					vec3d_set(player->acceleration, 6, 0, 0);
 					break;
 				}
 				case SDLK_f:
@@ -301,7 +299,11 @@ int main(int argc, char *argv[])
 						rocket_fired = true;
 					}
 					else if (player->weapon_flag == WFLAG_KNIFE)
-						use_knife(player, test);
+					{
+						grenade = grenade_init(player);
+						vec3d_set(grenade->position, player->position.x, player->position.y + 1, player->position.z);
+						//use_knife(player, test);
+					}
 					else if (player->weapon_flag == WFLAG_RIFLE)
 					{
 						printf("Start \n");
@@ -366,25 +368,22 @@ int main(int argc, char *argv[])
 				{
 				case SDLK_UP:
 				{
-					vec3d_set(test->acceleration, 0, 4, 0);
+					vec3d_set(test->acceleration, 0, 6, 0);
 					break;
 				}
 				case SDLK_DOWN:
 				{
-					vec3d_set(test->acceleration, 0, -4, 0);
-					//vec3d_add(player->position, player->acceleration, player->position);
+					vec3d_set(test->acceleration, 0, -6, 0);
 					break;
 				}
 				case SDLK_LEFT:
 				{
-					vec3d_set(test->acceleration, -4, 0, 0);
-					//vec3d_add(player->position, player->acceleration, player->position);
+					vec3d_set(test->acceleration, -6, 0, 0);
 					break;
 				}
 				case SDLK_RIGHT:
 				{
-					vec3d_set(test->acceleration, 4, 0, 0);
-					//vec3d_add(player->position, player->acceleration, player->position);
+					vec3d_set(test->acceleration, 6, 0, 0);
 					break;
 				}
 				case SDLK_z:
@@ -485,35 +484,43 @@ int main(int argc, char *argv[])
 		test->hb.y = test->position.y;
 		test->hb.z = test->position.z;
 
-		if (Rect3D_Overlap(player->hb, platform->hb))
+		if (Rect3D_Overlap(player->hb, platform->hb))// || Rect3D_Overlap(player->hb, new_platform->hb))
 		{
 			player->jump_flag = ENTITYFLAG_GROUNDED;
 			vec3d_set(player->acceleration, 0, 0, 0);
-			vec3d_set(player->position, platform->position.x, platform->position.y, platform->position.z + 2);
+			if (Rect3D_Overlap(player->hb, platform->hb))
+				vec3d_set(player->position, platform->position.x, platform->position.y, platform->position.z + 2);
+			/*
+			else if (Rect3D_Overlap(player->hb, new_platform->hb))
+				vec3d_set(player->position, new_platform->position.x, new_platform->position.y, new_platform->position.z + 2);
+			*/
 			printf("Called");
 		}
-		else if (!Rect3D_Overlap(player->hb, platform->hb) && player->position.z > platform->position.z + 2 &&
-			player->jump_flag == ENTITYFLAG_GROUNDED)
+		else if (!Rect3D_Overlap(player->hb, platform->hb) 
+			&& player->position.z > platform->position.z + 4 && player->jump_flag == ENTITYFLAG_GROUNDED)
 		{
 			player->jump_flag = ENTITYFLAG_JUMP;
-			printf("Called Me");
 		}
-		if (new_platform)
+
+		if (grenade)
 		{
-			if (Rect3D_Overlap(player->hb, platform->hb))
+			grenade_toss(grenade, player->position, test->position);
+
+			if (Rect3D_Overlap(grenade->hb, test->hb))
 			{
-				player->jump_flag = ENTITYFLAG_GROUNDED;
-				vec3d_set(player->acceleration, 0, 0, 0);
-				vec3d_set(player->position, platform->position.x, platform->position.y, platform->position.z + 2);
-				printf("Called");
+				grenade_touch(grenade, test);
 			}
-			else if (!Rect3D_Overlap(player->hb, platform->hb) && player->position.z > platform->position.z + 2 &&
-				player->jump_flag == ENTITYFLAG_GROUNDED)
+			Uint32 eMS = SDL_GetTicks() - start_time;
+			if (eMS)
 			{
-				player->jump_flag = ENTITYFLAG_JUMP;
-				printf("Called Me");
+				eSecs = eMS / 1000.0;
+				if ((int)eSecs % 30 == 0)
+				{
+					FreeEntityFromList(grenade);
+				}
 			}
 		}
+
 		if (rocket)
 		{
 			rocket_fly(rocket, player->position, test->position);
@@ -549,8 +556,8 @@ int main(int argc, char *argv[])
 				eSecs = eMS / 1000.0;
 				if ((int)eSecs % 30 == 0)
 				{
-					FreeEntityFromList(rocket);
-					rocket_fired = false;
+					FreeEntityFromList(rocket_2);
+					rocket_fired2 = false;
 				}
 			}
 		}
@@ -566,6 +573,17 @@ int main(int argc, char *argv[])
 		set_camera(
 			cameraPosition,
 			cameraRotation);
+		if (grenade)
+		{
+			obj_draw(
+				obj,
+				grenade->position,
+				grenade->rotation,
+				vec3d(1, 1, 1),
+				vec4d(1, 1, 1, 1),
+				texture
+				);
+		}
 		if (rocket)
 		{
 			obj_draw(
@@ -612,7 +630,7 @@ int main(int argc, char *argv[])
 			test->position,
 			test->rotation,
 			vec3d(1, 1, 1),
-			vec4d(1, 1, 1, 1),
+			vec4d(137, 0, 0, 1),
 			test->texture
 			);
 		obj_draw(
@@ -620,7 +638,7 @@ int main(int argc, char *argv[])
 			platform->position,
 			platform->rotation,
 			vec3d(1, 1, 1),
-			vec4d(1, 1, 1, 1),
+			vec4d(0, 137, 0, 1),
 			test->texture
 			);
 		if (pickup->flag == ENFLAG_ALIVE)
@@ -630,7 +648,7 @@ int main(int argc, char *argv[])
 				pickup->position,
 				pickup->rotation,
 				vec3d(1, 1, 1),
-				vec4d(1, 1, 1, 1),
+				vec4d(0, 0, 137, 1),
 				texture
 				);
 		}
@@ -641,21 +659,21 @@ int main(int argc, char *argv[])
 				new_pickup->position,
 				new_pickup->rotation,
 				vec3d(1, 1, 1),
-				vec4d(1, 1, 1, 1),
+				vec4d(0, 0, 137, 1),
 				texture
 				);
 		}
 		/*
 		if (new_platform)
 		{
-			obj_draw(
-				new_platform->obj,
-				new_platform->position,
-				new_platform->rotation,
-				vec3d(1, 1, 1),
-				vec4d(1, 1, 1, 1),
-				texture
-				);
+		obj_draw(
+		new_platform->obj,
+		new_platform->position,
+		new_platform->rotation,
+		vec3d(1, 1, 1),
+		vec4d(1, 1, 1, 1),
+		texture
+		);
 		}
 		*/
 		if (r > 360)r -= 360;
@@ -663,11 +681,11 @@ int main(int argc, char *argv[])
 		/* drawing code above here! */
 		graphics3d_next_frame();
 	}
-	//client_close();
-	//server_close_client();
-	//server_close();
-	//free(s_player);
-	//free(s_test);
+	client_close();
+	server_close_client();
+	server_close();
+	free(s_player);
+	free(s_test);
 	FreeEntityList();
 	return 0;
 }

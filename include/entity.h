@@ -3,7 +3,6 @@
 
 #include <time.h>
 #include "sprite.h"
-#include "vector.h"
 #include "obj.h"
 #include "physics.h"
 
@@ -21,6 +20,7 @@
 #define EFLAG_PLAYER				0
 #define EFLAG_PICKUP				1
 #define EFLAG_PLATFORM				2
+#define EFLAG_GRENADE				3
 
 #define ENFLAG_DEAD					0
 #define ENFLAG_ALIVE				1
@@ -41,7 +41,7 @@ typedef struct Entity_T
 	long id;
 	long type;
 	long flag;
-	
+
 	long weapon_flag;
 	long jump_flag;
 
@@ -54,6 +54,8 @@ typedef struct Entity_T
 	Vec3D move_dir;
 
 	clock_t t;
+
+	lbool rocket_fired;
 
 	void(*think) (struct Entity_T);
 	void(*touch) (struct Entity_T, struct Entity_T);

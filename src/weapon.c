@@ -22,7 +22,7 @@ entity* rocket_init(entity* player)
 	rocket = CreateEntity();
 	InitEntity(rocket, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 	vec3d_set(rocket->position, player->position.x, player->position.y + 1, player->position.z);
-	vec3d_set(rocket->acceleration, 0, 4, 0);
+	vec3d_set(rocket->acceleration, 0, 10, 0);
 
 	return rocket;
 }
@@ -87,12 +87,66 @@ void use_knife(entity* self, entity* enemy)
 		printf("Enemy Health: %i\n", enemy->health);
 	}
 }
-
 void weapon_spawn_collision(entity* other, entity* self)
 {
 	if (Rect3D_Overlap(other->hb, self->hb))
 	{
 		other->weapon_flag = self->weapon_flag;
 		self->flag = ENFLAG_DEAD;
+	}
+}
+entity* grenade_init(entity* player)
+{
+	entity* grenade;
+
+	grenade = CreateEntity();
+	InitEntity(grenade, "models/cube.obj", "models/cube_text.png", 1024, 1024);
+	grenade->type = EFLAG_GRENADE;
+	vec3d_set(grenade->position, player->position.x, player->position.y + 1, player->position.z);
+	vec3d_set(grenade->acceleration, 0, 7, 3);
+
+	return grenade;
+}
+void grenade_toss(entity* self, Vec3D start, Vec3D aim_dir)
+{
+	self->hb.x = self->position.x;
+	self->hb.y = self->position.y;
+	self->hb.z = self->position.z;
+	/*
+	float length;
+
+	vec3d_length(length, aim_dir);
+	vec3d_scale(self->velocity, aim_dir, 100 / length);
+	vectorMA(self->position, .01, self->velocity, self->position);
+	*/
+}
+void grenade_touch(entity* self, entity* other)
+{
+	int damage = 5;
+	int sp_damage = 50;
+	Sphere sphere;
+
+	sphere.x = self->position.x;
+	sphere.y = self->position.y;
+	sphere.z = self->position.z;
+	sphere.r = 15;
+	sphere.h = 8;
+
+	other->health -= damage;
+
+	if (Sphere_Cube_Overlap(sphere, other->hb))
+	{
+		other->health -= sp_damage;
+		FreeEntityFromList(self);
+		return;
+	}
+}
+void grenade_fire(entity* grenade, entity* enemy, Vec3D start, Vec3D aim_dir, int damage, int sp_damage, int mod)
+{
+	grenade_toss(grenade, start, aim_dir);
+
+	if (Rect3D_Overlap(grenade->hb, enemy->hb))
+	{
+		grenade_touch(grenade, enemy);
 	}
 }

@@ -1,6 +1,5 @@
 #include "vector.h"
 
-
 Vec2D vec2d(float x, float y)
 {
 	Vec2D v = { x, y };

@@ -64,7 +64,7 @@ entity* server_update(entity* e)
 {
 	if (SDLNet_TCP_Recv(csd, (void*)e, 1024) > 0)
 	{
-		//printf("Client Data: %f,%f,%f,%i\n", e->position.x, e->position.y, e->position.z, e->health);
+		printf("Client Data: %f,%f,%f,%i\n", e->position.x, e->position.y, e->position.z, e->health);
 		return e;
 	}
 }

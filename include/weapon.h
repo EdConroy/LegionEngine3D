@@ -9,4 +9,11 @@ void rocket_touch(entity* self, entity* other);
 void fire_rocket(entity* rocket, entity* enemy, Vec3D start, Vec3D aim_dir, int damage, int sp_damage, int mod);
 entity* rocket_init(entity* player);
 void rocket_kill(entity* rocket);
+
 void weapon_spawn_collision(entity* player, entity* self);
+
+entity* grenade_init(entity* player);
+void grenade_fire(entity* grenade, entity* player, Vec3D start, Vec3D aim_dir, int damage, int sp_damage, int mod);
+void grenade_touch(entity* self, entity* other);
+void grenade_toss(entity* self, Vec3D start, Vec3D aim_dir);
+void grenade_kill(entity* grenade);
