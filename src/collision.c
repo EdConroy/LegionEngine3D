@@ -1,5 +1,10 @@
 #include "collision.h"
 
+#define EPSILON .00000001
+#define CROSS(dest, v1, v2) (dest[0] = (v1[1] * v2[2]) - (v1[2] * v2[1]), dest[1] = (v1[2] * v2[0]) - (v1[0] * v2[2]), dest[2] = (v1[0] * v2[1]) - (v1[1] * v2[0]))
+#define DOT(v1, v2) ((v1[0] * v2[0]) + (v1[1] * v2[1]) + (v1[2] * v2[2]))
+#define SUB(dest, v1, v2) (dest[0] = v1[0] - v2[0], dest[1] = v1[1] - v2[1], dest[2] = v1[2] - v2[2])
+
 int AABB(SDL_Rect attacker, SDL_Rect defender)
 {
 	/*
@@ -276,4 +281,62 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1)
 		return true;
 
 	return false;
+}
+lbool RayTriangleCollision(Vec3 origin, Vec3 dir, Vec3 vert0, Vec3 vert1, Vec3 vert2, float* t, float* u, float* v)
+{
+	Vec3 edge1, edge2, tvec, pvec, qvec;
+	float det, inv_det;
+
+	SUB(edge1, vert1, vert0);
+	SUB(edge2, vert2, vert0);
+
+	CROSS(pvec, dir, edge2);
+
+	det = DOT(edge1, pvec);
+#ifdef TEST_CULL
+	if (det < EPSILON)
+		return false;
+	
+	SUB(tvec, origin, vert0);
+
+	*u = DOT(tvec, pvec);
+
+	if (*u < 0.0 || *u > det)
+		return false;
+
+	CROSS(qvec, tvec, edge1);
+
+	*v = DOT(dir, qvec);
+
+	if (*v < 0.0 || *u + *v > det)
+		return false;
+
+	*t = DOT(edge2, qvec);
+	inv_det = 1.0 / det;
+	*t *= inv_det;
+	*u *= inv_det;
+	*v *= inv_det;
+#else
+	if (det > -EPSILON && det < EPSILON)
+		return false;
+
+	inv_det = 1.0 / det;
+
+	SUB(tvec, origin, vert0);
+
+	*u = DOT(tvec, pvec) * inv_det;
+
+	if (*u < 0.0 || *u > 1.0)
+		return false;
+
+	CROSS(qvec, tvec, edge1);
+
+	*v = DOT(dir, qvec) * inv_det;
+
+	if (*v < 0.0 || *u + *v > 1.0)
+		return false;
+	
+	*t = DOT(edge2, qvec) * inv_det;
+#endif
+	return true;
 }
