@@ -132,7 +132,7 @@ void graphics3d_setup_default_light()
 	GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat mat_shininess[] = { 50.0 };
 	GLfloat light_position[] = { -10.0, -10.0, 10.0, 0.0 };
-	GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_ambient[] = { 1.5, 1.5, 1.5, 1.5 };
 	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 

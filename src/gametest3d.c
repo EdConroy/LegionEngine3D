@@ -23,6 +23,7 @@
 #include "collision.h"
 #include "game.h"
 #include "client.h"
+#include "text.h"
 
 void set_camera(Vec3D position, Vec3D rotation);
 
@@ -74,7 +75,7 @@ int main(int argc, char *argv[])
 	lbool rocket_fired2 = false;
 
 	init_logger("gametest3d.log");
-	if (graphics3d_init(1024, 768, 1, "gametest3d", 33) != 0)
+	if (graphics3d_init(640, 480, 1, "gametest3d", 33) != 0)
 	{
 		return -1;
 	}
@@ -126,6 +127,9 @@ int main(int argc, char *argv[])
 	pickup->flag = ENFLAG_ALIVE;
 	new_pickup->flag = ENFLAG_ALIVE;
 
+	player->flag = ENFLAG_ALIVE;
+	test->flag = ENFLAG_ALIVE;
+
 	entity_edit();
 	entity_load(new_pickup);
 	//entity_load(new_platform);
@@ -162,7 +166,7 @@ int main(int argc, char *argv[])
 	server_setup();
 	client_connect(s_player);
 	server_connect();
-
+	load_ascii();
 	/*
 	while (!connected)
 	{
@@ -271,6 +275,11 @@ int main(int argc, char *argv[])
 						player->weapon_flag = WFLAG_RIFLE;
 						printf("Current Weapon Flag: Rifle \n");
 					}
+					else if (player->weapon_flag == WFLAG_GRENADE)
+					{
+						player->weapon_flag = WFLAG_ROCKET;
+						printf("Current Weapon Flag: Rocket \n");
+					}
 					break;
 				}
 				case SDLK_e:
@@ -284,6 +293,11 @@ int main(int argc, char *argv[])
 					{
 						player->weapon_flag = WFLAG_ROCKET;
 						printf("Current Weapon Flag: Rocket \n");
+					}
+					else if (player->weapon_flag == WFLAG_ROCKET)
+					{
+						player->weapon_flag = WFLAG_GRENADE;
+						printf("Current Weapon Flag: Grenade \n");
 					}
 					break;
 				}
@@ -299,11 +313,7 @@ int main(int argc, char *argv[])
 						rocket_fired = true;
 					}
 					else if (player->weapon_flag == WFLAG_KNIFE)
-					{
-						grenade = grenade_init(player);
-						vec3d_set(grenade->position, player->position.x, player->position.y + 1, player->position.z);
-						//use_knife(player, test);
-					}
+						use_knife(player, test);
 					else if (player->weapon_flag == WFLAG_RIFLE)
 					{
 						printf("Start \n");
@@ -314,6 +324,11 @@ int main(int argc, char *argv[])
 						printf("Line Box pending \n");
 						fire_weapon(player, test, v0, v1, 25, 0);
 						printf("Cool \n");
+					}
+					else if (player->weapon_flag == WFLAG_GRENADE)
+					{
+						grenade = grenade_init(player);
+						vec3d_set(grenade->position, player->position.x, player->position.y + 1, player->position.z);
 					}
 					printf("Enemy Health: %i\n", test->health);
 					printf("My Health: %i\n", player->health);
@@ -562,6 +577,8 @@ int main(int argc, char *argv[])
 			}
 		}
 
+		if (player->health <= 0) player->flag = ENFLAG_DEAD;
+		if (test->health <= 0) test->flag = ENFLAG_DEAD;
 
 		graphics3d_frame_begin();
 		game_update();
@@ -615,24 +632,28 @@ int main(int argc, char *argv[])
 			bgtext
 			);
 
-
-		obj_draw(
-			obj,
-			player->position,
-			player->rotation,
-			vec3d(1, 1, 1),
-			vec4d(1, 1, 1, 1),
-			texture
-			);
-
-		obj_draw(
-			test->obj,
-			test->position,
-			test->rotation,
-			vec3d(1, 1, 1),
-			vec4d(137, 0, 0, 1),
-			test->texture
-			);
+		if (player->flag == ENFLAG_ALIVE)
+		{
+			obj_draw(
+				obj,
+				player->position,
+				player->rotation,
+				vec3d(1, 1, 1),
+				vec4d(1, 1, 1, 1),
+				texture
+				);
+		}
+		if (test->flag == ENFLAG_ALIVE)
+		{
+			obj_draw(
+				test->obj,
+				test->position,
+				test->rotation,
+				vec3d(1, 1, 1),
+				vec4d(137, 0, 0, 1),
+				test->texture
+				);
+		}
 		obj_draw(
 			platform->obj,
 			platform->position,
@@ -677,8 +698,17 @@ int main(int argc, char *argv[])
 		}
 		*/
 		if (r > 360)r -= 360;
+
+		char* health[32];
+
+		glPushMatrix();
+
+		glPopMatrix();
+
 		glPopMatrix();
 		/* drawing code above here! */
+		sprintf(health, "%d", player->health);
+		text_draw2(health, vec2d(0.1f, 0.94f), vec2d(0.08f, -0.08f));
 		graphics3d_next_frame();
 	}
 	client_close();

@@ -28,6 +28,7 @@
 #define WFLAG_RIFLE					0
 #define WFLAG_KNIFE					1
 #define WFLAG_ROCKET				2
+#define WFLAG_GRENADE				3
 
 typedef struct Entity_T
 {

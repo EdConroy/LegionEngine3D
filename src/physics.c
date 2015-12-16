@@ -124,7 +124,7 @@ static void space_update(space *space)
 		space_body_update(space, (Body*)it->data);
 		if (body->owner->jump_flag == ENTITYFLAG_JUMP || body->owner->position.z >= 10)
 			space_add_gravity(body);
-		if (body->owner->type == EFLAG_GRENADE && body->owner->position.z >= 10)
+		if (body->owner->type == EFLAG_GRENADE)
 			space_add_gravity(body);
 		space_accelerate(body);
 

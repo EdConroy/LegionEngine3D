@@ -102,8 +102,9 @@ entity* grenade_init(entity* player)
 	grenade = CreateEntity();
 	InitEntity(grenade, "models/cube.obj", "models/cube_text.png", 1024, 1024);
 	grenade->type = EFLAG_GRENADE;
+	grenade->gravity *= 2;
 	vec3d_set(grenade->position, player->position.x, player->position.y + 1, player->position.z);
-	vec3d_set(grenade->acceleration, 0, 7, 3);
+	vec3d_set(grenade->acceleration, 0, 7, 1);
 
 	return grenade;
 }
@@ -112,6 +113,11 @@ void grenade_toss(entity* self, Vec3D start, Vec3D aim_dir)
 	self->hb.x = self->position.x;
 	self->hb.y = self->position.y;
 	self->hb.z = self->position.z;
+
+	if (self->position.z > 10)
+		vec3d_set(self->position, 0, 7, -1);
+	if (self->position.z < -1)
+		vec3d_set(self->position, 0, 7, 0);
 	/*
 	float length;
 
