@@ -287,18 +287,23 @@ lbool RayTriangleCollision(Vec3 origin, Vec3 dir, Vec3 vert0, Vec3 vert1, Vec3 v
 	Vec3 edge1, edge2, tvec, pvec, qvec;
 	float det, inv_det;
 
+	/* find vectors for two edges sharing vert0*/
 	SUB(edge1, vert1, vert0);
 	SUB(edge2, vert2, vert0);
 
+	/* begin calculating determinant - also used to calculated U parameter */
 	CROSS(pvec, dir, edge2);
 
+	/* if determinant is near zero, ray lies in plane of triangle*/
 	det = DOT(edge1, pvec);
-#ifdef TEST_CULL
+#ifdef TEST_CULL /* Define TEST_CULL if culling */
 	if (det < EPSILON)
 		return false;
-	
+
+	/* calculate distance from vert0 to ray origin */
 	SUB(tvec, origin, vert0);
 
+	/* calculate U parameter and test bounds*/
 	*u = DOT(tvec, pvec);
 
 	if (*u < 0.0 || *u > det)
@@ -306,24 +311,28 @@ lbool RayTriangleCollision(Vec3 origin, Vec3 dir, Vec3 vert0, Vec3 vert1, Vec3 v
 
 	CROSS(qvec, tvec, edge1);
 
+	/* calculate V parameter and test bounds*/
 	*v = DOT(dir, qvec);
 
 	if (*v < 0.0 || *u + *v > det)
 		return false;
 
+	/* calculate t, scale parameters, ray intersects triangle*/
 	*t = DOT(edge2, qvec);
 	inv_det = 1.0 / det;
 	*t *= inv_det;
 	*u *= inv_det;
 	*v *= inv_det;
-#else
+#else /* Non-culling branch*/
 	if (det > -EPSILON && det < EPSILON)
 		return false;
 
 	inv_det = 1.0 / det;
 
+	/* calculate distance from vert0 to ray origin */
 	SUB(tvec, origin, vert0);
 
+	/* calculate U parameter and test bounds */
 	*u = DOT(tvec, pvec) * inv_det;
 
 	if (*u < 0.0 || *u > 1.0)
@@ -331,11 +340,13 @@ lbool RayTriangleCollision(Vec3 origin, Vec3 dir, Vec3 vert0, Vec3 vert1, Vec3 v
 
 	CROSS(qvec, tvec, edge1);
 
+	/* calculate V parameter and test bounds */
 	*v = DOT(dir, qvec) * inv_det;
 
 	if (*v < 0.0 || *u + *v > 1.0)
 		return false;
-	
+
+	/* calculate t, ray intersects triangle */
 	*t = DOT(edge2, qvec) * inv_det;
 #endif
 	return true;
