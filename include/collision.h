@@ -41,6 +41,6 @@ int Sphere_Cube_Overlap(Sphere a, Cube b);
 int Ray_Cube_Overlap(Vec3D point, Vec3D box, Vec3D size);
 lbool ClipLine(int d, Vec3DCompare aabb, Vec3 v0, Vec3 v1);
 lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1);
-lbool RayTriangleCollision(Vec3 origin, Vec3 dir, Vec3 vert0, Vec3 vert1, Vec3 vert2, float* t, float* u, float* v)
+lbool RayTriangleCollision(Vec3 origin, Vec3 dir, Vec3 vert0, Vec3 vert1, Vec3 vert2);
 
 #endif

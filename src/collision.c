@@ -282,10 +282,11 @@ lbool LineBoxOverlap(Vec3DCompare aabb, Vec3 v0, Vec3 v1)
 
 	return false;
 }
-lbool RayTriangleCollision(Vec3 origin, Vec3 dir, Vec3 vert0, Vec3 vert1, Vec3 vert2, float* t, float* u, float* v)
+lbool RayTriangleCollision(Vec3 origin, Vec3 dir, Vec3 vert0, Vec3 vert1, Vec3 vert2)
 {
 	Vec3 edge1, edge2, tvec, pvec, qvec;
 	float det, inv_det;
+	float t, u, v;
 
 	/* find vectors for two edges sharing vert0*/
 	SUB(edge1, vert1, vert0);
@@ -304,7 +305,7 @@ lbool RayTriangleCollision(Vec3 origin, Vec3 dir, Vec3 vert0, Vec3 vert1, Vec3 v
 	SUB(tvec, origin, vert0);
 
 	/* calculate U parameter and test bounds*/
-	*u = DOT(tvec, pvec);
+	u = DOT(tvec, pvec);
 
 	if (*u < 0.0 || *u > det)
 		return false;
@@ -312,17 +313,17 @@ lbool RayTriangleCollision(Vec3 origin, Vec3 dir, Vec3 vert0, Vec3 vert1, Vec3 v
 	CROSS(qvec, tvec, edge1);
 
 	/* calculate V parameter and test bounds*/
-	*v = DOT(dir, qvec);
+	v = DOT(dir, qvec);
 
 	if (*v < 0.0 || *u + *v > det)
 		return false;
 
 	/* calculate t, scale parameters, ray intersects triangle*/
-	*t = DOT(edge2, qvec);
+	t = DOT(edge2, qvec);
 	inv_det = 1.0 / det;
-	*t *= inv_det;
-	*u *= inv_det;
-	*v *= inv_det;
+	t *= inv_det;
+	u *= inv_det;
+	v *= inv_det;
 #else /* Non-culling branch*/
 	if (det > -EPSILON && det < EPSILON)
 		return false;
@@ -333,21 +334,21 @@ lbool RayTriangleCollision(Vec3 origin, Vec3 dir, Vec3 vert0, Vec3 vert1, Vec3 v
 	SUB(tvec, origin, vert0);
 
 	/* calculate U parameter and test bounds */
-	*u = DOT(tvec, pvec) * inv_det;
+	u = DOT(tvec, pvec) * inv_det;
 
-	if (*u < 0.0 || *u > 1.0)
+	if (u < 0.0 || u > 1.0)
 		return false;
 
 	CROSS(qvec, tvec, edge1);
 
 	/* calculate V parameter and test bounds */
-	*v = DOT(dir, qvec) * inv_det;
+	v = DOT(dir, qvec) * inv_det;
 
-	if (*v < 0.0 || *u + *v > 1.0)
+	if (v < 0.0 || u + v > 1.0)
 		return false;
 
 	/* calculate t, ray intersects triangle */
-	*t = DOT(edge2, qvec) * inv_det;
+	t = DOT(edge2, qvec) * inv_det;
 #endif
 	return true;
 }

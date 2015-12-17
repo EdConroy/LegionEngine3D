@@ -316,6 +316,14 @@ int main(int argc, char *argv[])
 						use_knife(player, test);
 					else if (player->weapon_flag == WFLAG_RIFLE)
 					{
+						/*
+						float a, b, c;
+
+						a = 0.0;
+						b = 0.0;
+						c = 0.0;
+						*/
+
 						printf("Start \n");
 						Vec3 v0;
 						Vec3 v1;
@@ -324,6 +332,15 @@ int main(int argc, char *argv[])
 						printf("Line Box pending \n");
 						fire_weapon(player, test, v0, v1, 25, 0);
 						printf("Cool \n");
+						/*
+						if (RayTriangleCollision(v0, v1, test->obj->triangle_array->p,
+							test->obj->triangle_array->p, test->obj->triangle_array->p,
+							&a, &b, &c))
+						{
+							printf("It collides \n");
+						}
+						printf("It dosen't do anything \n");
+						*/
 					}
 					else if (player->weapon_flag == WFLAG_GRENADE)
 					{
