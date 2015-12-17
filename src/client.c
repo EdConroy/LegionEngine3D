@@ -77,7 +77,7 @@ entity* client_recieve(entity* e)
 {
 	if (SDLNet_TCP_Recv(data.sd, (void*)e, 1024) > 0)
 	{
-		printf("Server Data: %f,%f,%f, %i\n", e->position.x, e->position.y, e->position.z, e->health);
+		//printf("Server Data: %f,%f,%f, %i\n", e->position.x, e->position.y, e->position.z, e->health);
 		return e;
 	}
 }
