@@ -17,8 +17,7 @@ char buffer[512];
 void client_init(Client* client)
 {
 	malloc(sizeof(Client));
-	//client->ip.host = 180884531;
-	client->ip.host = 2130706433;
+	client->ip.host = 0;
 	client->ip.port = 2000;
 }
 Client* get_client(int client)
